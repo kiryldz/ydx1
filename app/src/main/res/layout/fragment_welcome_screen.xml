@@ -1,0 +1,19 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ydx.test1.welcomescreen.WelcomeScreenFragment">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/welcomeScreenViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v4.view.ViewPager>
+
+    <com.viewpagerindicator.CirclePageIndicator
+        android:id="@+id/titles"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/margin_bottom_indicators"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+</FrameLayout>

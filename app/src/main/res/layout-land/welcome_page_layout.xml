@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/welcomeMainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="40dp"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/welcomeScreenImage"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginLeft="40dp"
+            android:adjustViewBounds="true" />
+        <TextView
+            android:id="@+id/welcomeScreenText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="30dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="@string/hello_blank_fragment"/>
+    </LinearLayout>
+    <Button
+        android:id="@+id/welcomeNextBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_next_btn"
+        android:layout_marginEnd="@dimen/margin_next_button"
+        android:layout_marginRight="@dimen/margin_next_button"
+        android:layout_marginStart="@dimen/margin_next_button"
+        android:layout_marginLeft="@dimen/margin_next_button"
+        android:layout_marginBottom="@dimen/margin_bottom_next_button"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/rounded_shape_button"/>
+</RelativeLayout>
