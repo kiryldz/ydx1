@@ -1,0 +1,19 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppThemeDark" parent="@style/Theme.AppCompat">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#006064</item>
+        <item name="colorPrimaryDark">#00838F</item>
+        <item name="colorAccent">#01579B</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="AppThemeLight" parent="@style/Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#B2EBF2</item>
+        <item name="colorPrimaryDark">#00E5FF</item>
+        <item name="colorAccent">#4FC3F7</item>
+    </style>
+
+</resources>
