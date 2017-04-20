@@ -5,5 +5,5 @@
     <dimen name="margin_next_button">50dp</dimen>
     <dimen name="margin_bottom_next_button">50dp</dimen>
     <dimen name="margin_bottom_indicators">120dp</dimen>
-    <dimen name="icon_text_size">15sp</dimen>
+    <dimen name="icon_text_size">12sp</dimen>
 </resources>

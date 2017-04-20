@@ -1,2 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string-array name="themelistentries">
+        <item>@string/light_style</item>
+        <item>@string/dark_style</item>
+    </string-array>
+    <string-array name="themelistvalues">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="cellslistentries">
+        <item>@string/cells_opt_1</item>
+        <item>@string/cells_opt_2</item>
+    </string-array>
+    <string-array name="cellslistvalues">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+</resources>

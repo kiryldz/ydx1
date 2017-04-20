@@ -1,5 +1,6 @@
 package com.ydx.test1.welcomescreen;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,14 +8,11 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.viewpagerindicator.CirclePageIndicator;
+import com.ydx.test1.iconlist.AppIconsActivity;
 import com.ydx.test1.utils.Constants;
 import com.ydx.test1.R;
-import com.ydx.test1.iconlist.AppIconsActivity;
-
 import java.util.ArrayList;
-
 import static com.ydx.test1.utils.Constants.NUM_WELCOME_PAGES;
 import static com.ydx.test1.utils.Constants.welcomeScreenPictures;
 import static com.ydx.test1.utils.Constants.welcomeScreenText;
@@ -56,7 +54,12 @@ public class WelcomeScreenFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (NUM_WELCOME_PAGES == mViewPager.getCurrentItem()) {
-                    startActivity(new Intent(getActivity(),AppIconsActivity.class));
+                    getActivity()
+                            .getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                            .edit()
+                            .putBoolean("first_run",false)
+                            .apply();
+                    startActivity(new Intent(getActivity(), AppIconsActivity.class));
                     getActivity().finish();
                 } else {
                     mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);

@@ -1,50 +1,41 @@
 package com.ydx.test1.iconlist;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import static com.ydx.test1.utils.Constants.imageList;
+import android.graphics.drawable.Drawable;
 
 
-class AppIcon implements Parcelable {
-    private String[] appName = new String [3];
-    private int appDrawable;
+class AppIcon {
+    private String appName;
+    private String appPackage;
+    private Drawable appDrawable;
     private int appClickNum;
+    private long installTime;
 
-    AppIcon(String appName, int appDrawable) {
-        this.appName[0] = appName;
-        this.appName[1] = "";
-        this.appName[2] = "";
-        this.appDrawable = imageList[appDrawable];
+    AppIcon(String appName, String appPackage,Drawable appDrawable) {
+        this.appName = appName;
+        this.appDrawable = appDrawable;
+        this.appPackage = appPackage;
         appClickNum = 0;
     }
 
-    private AppIcon(Parcel in) {
-        in.readStringArray(appName);
-        appDrawable = in.readInt();
-        appClickNum = in.readInt();
+    AppIcon (String appName, Drawable appDrawable) {
+        this.appName = appName;
+        this.appDrawable = appDrawable;
+        appClickNum = 0;
     }
 
-    public static final Creator<AppIcon> CREATOR = new Creator<AppIcon>() {
-        @Override
-        public AppIcon createFromParcel(Parcel in) {
-            return new AppIcon(in);
-        }
+    String[] getGSONset() {
+        return new String[]{appPackage
+                , String.valueOf(appClickNum)
+                , String.valueOf(installTime)};
+    }
 
-        @Override
-        public AppIcon[] newArray(int size) {
-            return new AppIcon[size];
-        }
-    };
+    String getAppPackage() {return appPackage;}
 
-    String[] getAppName() {
+    String getAppName() {
         return appName;
     }
 
-    void setAppNamePopular(String appName) { this.appName[1] = appName; }
-
-    void setAppNameNew(String appName) { this.appName[2] = appName; }
-
-    int getAppDrawable() {
+    Drawable getAppDrawable() {
         return appDrawable;
     }
 
@@ -56,16 +47,14 @@ class AppIcon implements Parcelable {
         this.appClickNum++;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    void setAppClicks(int clicks) {this.appClickNum = clicks; }
+
+    long getInstallTime() {
+        return installTime;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeStringArray(appName);
-        parcel.writeInt(appDrawable);
-        parcel.writeInt(appClickNum);
+    void setInstallTime(long installTime) {
+        this.installTime = installTime;
     }
 
 }

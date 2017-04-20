@@ -3,20 +3,38 @@
     package="com.ydx.test1">
 
     <application
+        android:name=".MainApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".MainApp"
         android:supportsRtl="true"
         android:theme="@style/AppThemeLight">
-        <activity android:name=".welcomescreen.WelcomeScreenActivity">
+        <activity
+            android:name=".welcomescreen.WelcomeScreenActivity"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name=".iconlist.AppIconsActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".iconlist.AppIconsActivity">
-        </activity>
+
+        <receiver
+            android:name=".utils.PackageChangeStatusReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:priority="0" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_CHANGED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
