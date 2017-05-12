@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:id="@+id/app_icon_whole"
     android:background="@drawable/rounded_shape_button"
-    android:layout_margin="5dp"
-    android:padding="5dp"
+    android:layout_margin="3dp"
+    android:padding="3dp"
     android:weightSum="5"
     android:orientation="vertical">
 
@@ -19,6 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:gravity="center"
         android:textSize="@dimen/icon_text_size"
         android:id="@+id/app_title"/>
