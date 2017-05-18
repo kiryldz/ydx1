@@ -1,0 +1,72 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/general_settings">
+
+        <ListPreference
+            android:key="change_theme"
+            android:title="@string/change_theme"
+            android:entries="@array/themelistentries"
+            android:entryValues="@array/themelistvalues"/>
+
+        <ListPreference
+            android:key="change_cells"
+            android:title="@string/change_cells"
+            android:entries="@array/cellslistentries"
+            android:entryValues="@array/cellslistvalues" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/favorite_icons">
+
+        <CheckBoxPreference
+            android:key="hide_favs"
+            android:title="@string/hide_favs" />
+
+        <CheckBoxPreference
+            android:key="hide_favs_fragment"
+            android:title="@string/hide_favs_fragment" />
+
+        <Preference
+            android:key="del_favs"
+            android:title="@string/del_favs" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/URL_block">
+
+        <EditTextPreference
+            android:key="URL_limit"
+            android:title="@string/URL_limit" />
+
+        <Preference
+            android:key="URL_clear"
+            android:title="@string/URL_clear" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/bkg_picture_block">
+
+        <ListPreference
+            android:key="change_upd_pict_interval"
+            android:title="@string/change_upd_pict_interval"
+            android:entries="@array/updintervalentries"
+            android:entryValues="@array/updintervalvalues"
+            app:defaultValue="0"/>
+
+        <Preference
+            android:key="upd_pict_now"
+            android:title="@string/upd_pict_now" />
+
+        <CheckBoxPreference
+            android:key="same_picts_activities"
+            android:title="@string/same_picts_activities"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

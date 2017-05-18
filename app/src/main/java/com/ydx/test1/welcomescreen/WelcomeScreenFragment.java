@@ -1,20 +1,20 @@
 package com.ydx.test1.welcomescreen;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.viewpagerindicator.CirclePageIndicator;
+import com.ydx.test1.iconlist.AppIconsActivity;
 import com.ydx.test1.utils.Constants;
 import com.ydx.test1.R;
-import com.ydx.test1.iconlist.AppIconsActivity;
-
 import java.util.ArrayList;
-
 import static com.ydx.test1.utils.Constants.NUM_WELCOME_PAGES;
 import static com.ydx.test1.utils.Constants.welcomeScreenPictures;
 import static com.ydx.test1.utils.Constants.welcomeScreenText;
@@ -24,6 +24,15 @@ public class WelcomeScreenFragment extends Fragment {
 
     private ViewPager mViewPager;
     private ArrayList<WelcomeScreenInstance> mList = new ArrayList<>();
+
+    static int fetchAccentColor(Context ctx) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = ctx.obtainStyledAttributes(typedValue.data
+                , new int[] { R.attr.colorAccent });
+        int color = a.getColor(0, 0);
+        a.recycle();
+        return color;
+    }
 
     private void generateFakeData() {
         for (int i = 0; i < NUM_WELCOME_PAGES; i++) {
@@ -56,7 +65,12 @@ public class WelcomeScreenFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (NUM_WELCOME_PAGES == mViewPager.getCurrentItem()) {
-                    startActivity(new Intent(getActivity(),AppIconsActivity.class));
+                    getActivity()
+                            .getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                            .edit()
+                            .putBoolean("first_run",false)
+                            .apply();
+                    startActivity(new Intent(getActivity(), AppIconsActivity.class));
                     getActivity().finish();
                 } else {
                     mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
@@ -69,7 +83,7 @@ public class WelcomeScreenFragment extends Fragment {
         CirclePageIndicator circlePageIndicator = (CirclePageIndicator)
                 view.findViewById(R.id.titles);
         circlePageIndicator.setRadius(20f);
-        circlePageIndicator.setFillColor(Constants.fetchAccentColor(getContext()));
+        circlePageIndicator.setFillColor(fetchAccentColor(getContext()));
         circlePageIndicator.setViewPager(mViewPager);
         return view;
     }

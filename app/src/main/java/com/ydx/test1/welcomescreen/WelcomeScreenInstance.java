@@ -1,20 +1,20 @@
 package com.ydx.test1.welcomescreen;
 
 
-class WelcomeScreenInstance {
+public class WelcomeScreenInstance {
     private String mText;
     private int mImgRes;
 
-    WelcomeScreenInstance(String mText, int mImgRes) {
+    public WelcomeScreenInstance(String mText, int mImgRes) {
         this.mText = mText;
         this.mImgRes = mImgRes;
     }
 
-    String getText() {
+    public String getText() {
         return mText;
     }
 
-    int getImgRes() {
+    public int getImgRes() {
         return mImgRes;
     }
 }

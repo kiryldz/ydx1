@@ -10,5 +10,4 @@ public class WelcomeScreenActivity extends SingleFragmentActivity {
     protected Fragment createFragment() {
         return new WelcomeScreenFragment();
     }
-
 }

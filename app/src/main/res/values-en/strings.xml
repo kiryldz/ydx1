@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bkg_picture_block">Background update</string>
+    <string name="change_upd_pict_interval">Frequency</string>
+    <string name="upd_pict_now">Update now</string>
+    <string name="upd_pict_1">15 min</string>
+    <string name="upd_pict_2">1 h</string>
+    <string name="upd_pict_3">8 h</string>
+    <string name="upd_pict_4">24 h</string>
+    <string name="same_picts_activities">Unique backgrounds</string>
+</resources>

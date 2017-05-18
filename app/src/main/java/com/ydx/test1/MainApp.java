@@ -2,12 +2,18 @@ package com.ydx.test1;
 
 import android.app.Application;
 
+import com.yandex.metrica.YandexMetrica;
+
 
 public class MainApp extends Application {
     private static boolean isDark = false;
     private static boolean isCellsOpt2 = false;
     private static boolean isFirstLaunch = true;
     private static boolean atLeastOneItemClicked = false;
+    private String YDX_API_KEY = "083ba446-c55a-40de-8378-32cbeed2b09b";
+
+    public static final String PARAM_RESULT = "AppIconsActivity.result";
+    public static final String BROADCAST_ACTION = "com.ydx.test1.AppIconsActivity.BroadcastReceiver";
 
     public static boolean isAtLeastOneItemClicked() {
         return atLeastOneItemClicked;
@@ -39,5 +45,12 @@ public class MainApp extends Application {
 
     public static boolean getIsCellsOpt2() {
         return isCellsOpt2;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        YandexMetrica.activate(getApplicationContext(), YDX_API_KEY);
+        YandexMetrica.enableActivityAutoTracking(this);
     }
 }

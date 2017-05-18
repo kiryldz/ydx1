@@ -2,7 +2,6 @@ package com.ydx.test1.welcomescreen;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
 import android.graphics.drawable.GradientDrawable;
@@ -15,15 +14,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
 import com.ydx.test1.utils.Constants;
 import com.ydx.test1.MainApp;
 import com.ydx.test1.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.ydx.test1.utils.Constants.NUM_WELCOME_PAGES;
+import static com.ydx.test1.welcomescreen.WelcomeScreenFragment.fetchAccentColor;
 
 
 class WelcomeScreenAdapter extends PagerAdapter {
@@ -52,11 +50,7 @@ class WelcomeScreenAdapter extends PagerAdapter {
 
     private void restartActivityForNewTheme(boolean flag) {
         MainApp.setThemeFlag(flag);
-        Activity a = (Activity) mContext;
-        Intent i = new Intent(a,a.getClass());
-        i.putExtra("num_to_start",NUM_WELCOME_PAGES);
-        a.startActivity(i);
-        a.finish();
+        ((Activity)mContext).recreate();
     }
 
     private void setSolidColorFromTheme(Button btn) {
@@ -69,7 +63,7 @@ class WelcomeScreenAdapter extends PagerAdapter {
                             ? drawableContainerState.getChildren()
                             : new Drawable[0];
             GradientDrawable selectedDrawable = (GradientDrawable) children[0];
-            selectedDrawable.setColor(Constants.fetchAccentColor(btn.getContext()));
+            selectedDrawable.setColor(fetchAccentColor(btn.getContext()));
         }
     }
 
