@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UrlReaderDbHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.utils</a> &gt; <span class="el_source">UrlReaderDbHelper.java</span></div><h1>UrlReaderDbHelper.java</h1><pre class="source lang-java linenums">package com.ydx.test1.utils;
+
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class UrlReaderDbHelper extends SQLiteOpenHelper {
+
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = &quot;UrlReader.db&quot;;
+
+    private static final String TEXT_TYPE = &quot; TEXT&quot;;
+    private static final String INTEGER_TYPE = &quot; TIMESTAMP&quot;;
+    private static final String COMMA_SEP = &quot;,&quot;;
+    private static final String SQL_CREATE_ENTRIES =
+            &quot;CREATE TABLE &quot; + UrlInstance.UrlEntry.TABLE_NAME + &quot; (&quot; +
+                    UrlInstance.UrlEntry._ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,&quot; +
+                    UrlInstance.UrlEntry.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
+                    UrlInstance.UrlEntry.COLUMN_NAME_TIMESTAMP + INTEGER_TYPE  + &quot; )&quot;;
+
+    private static final String SQL_DELETE_ENTRIES =
+            &quot;DROP TABLE IF EXISTS &quot; + UrlInstance.UrlEntry.TABLE_NAME;
+
+    public UrlReaderDbHelper(Context context) {
+<span class="nc" id="L26">        super(context, DATABASE_NAME, null, DATABASE_VERSION);</span>
+<span class="nc" id="L27">    }</span>
+
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+<span class="nc" id="L31">        sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES);</span>
+<span class="nc" id="L32">    }</span>
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+<span class="nc" id="L36">        sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES);</span>
+<span class="nc" id="L37">        onCreate(sqLiteDatabase);</span>
+<span class="nc" id="L38">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

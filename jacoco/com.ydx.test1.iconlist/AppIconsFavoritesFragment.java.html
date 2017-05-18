@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppIconsFavoritesFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.iconlist</a> &gt; <span class="el_source">AppIconsFavoritesFragment.java</span></div><h1>AppIconsFavoritesFragment.java</h1><pre class="source lang-java linenums">package com.ydx.test1.iconlist;
+
+import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ydx.test1.R;
+import com.ydx.test1.utils.Constants;
+import com.ydx.test1.utils.UrlInstance;
+import com.ydx.test1.utils.UrlReaderDbHelper;
+import java.io.FileNotFoundException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static android.content.Context.MODE_PRIVATE;
+
+<span class="nc" id="L42">public class AppIconsFavoritesFragment extends Fragment {</span>
+
+    private AppIconsFavoritesAdapter mAdapter;
+<span class="nc" id="L45">    private List&lt;AppIcon&gt; favoriteList = new ArrayList&lt;&gt;();</span>
+    private UrlReaderDbHelper helper;
+    private PackageManager packageManager;
+    private int URLlimit;
+
+    public void setURLlimit(int URLlimit) {
+<span class="nc" id="L51">        this.URLlimit = URLlimit;</span>
+<span class="nc" id="L52">    }</span>
+
+    public static AppIconsFavoritesFragment newInstance() {
+<span class="nc" id="L55">        return new AppIconsFavoritesFragment();</span>
+    }
+
+    public AppIconsFavoritesAdapter getAdapter() {
+<span class="nc" id="L59">        return mAdapter;</span>
+    }
+
+    public void clearURLinDB() {
+<span class="nc" id="L63">        SQLiteDatabase db = helper.getWritableDatabase();</span>
+<span class="nc" id="L64">        db.delete(UrlInstance.UrlEntry.TABLE_NAME, null, null);</span>
+<span class="nc" id="L65">        db.close();</span>
+<span class="nc" id="L66">    }</span>
+
+    private void insertURLtoDB(String s) {
+<span class="nc" id="L69">        SQLiteDatabase db = helper.getWritableDatabase();</span>
+<span class="nc" id="L70">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L71">        values.put(UrlInstance.UrlEntry.COLUMN_NAME_URL, s);</span>
+<span class="nc" id="L72">        values.put(UrlInstance.UrlEntry.COLUMN_NAME_TIMESTAMP, System.currentTimeMillis());</span>
+<span class="nc" id="L73">        db.insert(</span>
+                UrlInstance.UrlEntry.TABLE_NAME,
+                null,
+                values);
+<span class="nc" id="L77">        db.close();</span>
+<span class="nc" id="L78">    }</span>
+
+    private CharSequence[] getURLfromDB() {
+<span class="nc" id="L81">        ArrayList&lt;String&gt; urls = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L82">        SQLiteDatabase db = helper.getReadableDatabase();</span>
+<span class="nc" id="L83">        String[] projection = {</span>
+                UrlInstance.UrlEntry.COLUMN_NAME_URL
+        };
+<span class="nc" id="L86">        String sortOrder =</span>
+                UrlInstance.UrlEntry.COLUMN_NAME_TIMESTAMP + &quot; DESC&quot;;
+<span class="nc" id="L88">        Cursor c = db.query(</span>
+                true,
+                UrlInstance.UrlEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder,
+<span class="nc" id="L97">                String.valueOf(URLlimit)</span>
+        );
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (c != null) {</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            if (c.moveToFirst()) {</span>
+                do {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                    for (String cn : c.getColumnNames()) {</span>
+<span class="nc" id="L103">                        urls.add(c.getString(c.getColumnIndex(cn)));</span>
+                    }
+
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                } while (c.moveToNext());</span>
+            }
+<span class="nc" id="L108">            c.close();</span>
+        }
+<span class="nc" id="L110">        db.close();</span>
+<span class="nc" id="L111">        return urls.toArray(new CharSequence[urls.size()]);</span>
+    }
+
+    private void startURLIntent(String text, String http, boolean toDB) {
+<span class="nc" id="L115">        Intent browserIntent = new Intent(Intent.ACTION_VIEW</span>
+<span class="nc" id="L116">                , Uri.parse(http + text));</span>
+<span class="nc" id="L117">        startActivity(browserIntent);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (toDB) {</span>
+<span class="nc" id="L119">            insertURLtoDB(text);</span>
+        }
+<span class="nc" id="L121">    }</span>
+
+    private void openURL(String enteredText, boolean toDB) {
+        try {
+<span class="nc" id="L125">            startURLIntent(enteredText, &quot;&quot;, toDB);</span>
+<span class="nc" id="L126">        } catch (ActivityNotFoundException ex1) {</span>
+            try {
+<span class="nc" id="L128">                startURLIntent(enteredText, &quot;http://&quot;, toDB);</span>
+<span class="nc" id="L129">            } catch (ActivityNotFoundException ex2) {</span>
+<span class="nc" id="L130">                Toast.makeText(getContext()</span>
+<span class="nc" id="L131">                        , getContext().getString(R.string.invalid_uri)</span>
+<span class="nc" id="L132">                        , Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L133">            }</span>
+<span class="nc" id="L134">        }</span>
+<span class="nc" id="L135">    }</span>
+
+    private void initButtons(View view) {
+<span class="nc" id="L138">        Button enterBtn = (Button) view.findViewById(R.id.enterURLbtn);</span>
+<span class="nc" id="L139">        final EditText editText = (EditText) view.findViewById(R.id.editTextURL);</span>
+<span class="nc" id="L140">        enterBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L143">                String enteredText = editText.getText().toString();</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                if (enteredText.length() &gt; 0) {</span>
+<span class="nc" id="L145">                    openURL(enteredText, true);</span>
+                }
+<span class="nc" id="L147">            }</span>
+        });
+<span class="nc" id="L149">        Button histBtn = (Button) view.findViewById(R.id.histURLbtn);</span>
+<span class="nc" id="L150">        histBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L153">                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());</span>
+<span class="nc" id="L154">                builder.setTitle(getString(R.string.choose_history));</span>
+<span class="nc" id="L155">                final CharSequence[] urls = getURLfromDB();</span>
+<span class="nc" id="L156">                builder.setItems(urls, new DialogInterface.OnClickListener() {</span>
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+<span class="nc" id="L159">                        openURL(urls[which].toString(), false);</span>
+<span class="nc" id="L160">                        dialog.dismiss();</span>
+<span class="nc" id="L161">                    }</span>
+                });
+<span class="nc" id="L163">                AlertDialog d = builder.show();</span>
+<span class="nc" id="L164">                d.getListView().setFastScrollEnabled(true);</span>
+<span class="nc" id="L165">            }</span>
+        });
+<span class="nc" id="L167">    }</span>
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="nc" id="L172">        View view = inflater.inflate(R.layout.fragment_icon_list_favorites,</span>
+                container, false);
+
+<span class="nc" id="L175">        SharedPreferences sp = PreferenceManager</span>
+<span class="nc" id="L176">                .getDefaultSharedPreferences(getActivity());</span>
+
+<span class="nc" id="L178">        URLlimit = Integer.valueOf(PreferenceManager</span>
+<span class="nc" id="L179">                .getDefaultSharedPreferences(getContext())</span>
+<span class="nc" id="L180">                .getString(&quot;URL_limit&quot;,&quot;5&quot;));</span>
+
+<span class="nc" id="L182">        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);</span>
+<span class="nc" id="L183">        helper = new UrlReaderDbHelper(getContext());</span>
+
+        final int cellsInLineCount;
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (sp.getString(&quot;change_cells&quot;,&quot;1&quot;).equals(&quot;1&quot;)) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            if (getResources().getConfiguration().orientation</span>
+                    == Configuration.ORIENTATION_LANDSCAPE) {
+<span class="nc" id="L189">                cellsInLineCount = Constants.ICON_LIST_SIZE_LARGE[1];</span>
+            } else {
+<span class="nc" id="L191">                cellsInLineCount = Constants.ICON_LIST_SIZE_LARGE[0];</span>
+            }
+        } else {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            if (getResources().getConfiguration().orientation</span>
+                    == Configuration.ORIENTATION_LANDSCAPE) {
+<span class="nc" id="L196">                cellsInLineCount = Constants.ICON_LIST_SIZE_STANDART[1];</span>
+            } else {
+<span class="nc" id="L198">                cellsInLineCount = Constants.ICON_LIST_SIZE_STANDART[0];</span>
+            }
+        }
+<span class="nc" id="L201">        packageManager = getActivity().getPackageManager();</span>
+
+<span class="nc" id="L203">        GridLayoutManager mLayoutManager</span>
+<span class="nc" id="L204">                = new GridLayoutManager(getActivity().getApplicationContext()</span>
+                , cellsInLineCount);
+<span class="nc" id="L206">        recyclerView.setLayoutManager(mLayoutManager);</span>
+<span class="nc" id="L207">        restoreFavoriteList();</span>
+<span class="nc" id="L208">        mAdapter = new AppIconsFavoritesAdapter(packageManager</span>
+                , favoriteList
+                , PreferenceManager
+<span class="nc" id="L211">                    .getDefaultSharedPreferences(getContext())</span>
+<span class="nc" id="L212">                    .getBoolean(&quot;hide_favs&quot;,false));</span>
+<span class="nc" id="L213">        recyclerView.setAdapter(mAdapter);</span>
+<span class="nc" id="L214">        initButtons(view);</span>
+<span class="nc" id="L215">        return view;</span>
+    }
+
+    private void restoreFavoriteList() {
+<span class="nc" id="L219">        Gson gson = new Gson();</span>
+<span class="nc" id="L220">        SharedPreferences prefs = getActivity()</span>
+<span class="nc" id="L221">                .getSharedPreferences(&quot;apps_storage&quot;, MODE_PRIVATE);</span>
+<span class="nc" id="L222">        String json = prefs.getString(&quot;favorite_list&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (json.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L224">            return;</span>
+        }
+<span class="nc" id="L226">        Type type = new TypeToken&lt; List &lt; String[] &gt;&gt;() {}.getType();</span>
+<span class="nc" id="L227">        List&lt;String[]&gt; iconListFromStorage = gson.fromJson(json, type);</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        if (iconListFromStorage.size() &gt; 0) {</span>
+<span class="nc" id="L229">            generateAppListFromJson(iconListFromStorage);</span>
+        }
+<span class="nc" id="L231">    }</span>
+
+    private void generateAppListFromJson(List&lt;String[]&gt; list) {
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        for (String[] jsonSet : list) {</span>
+            AppIcon app ;
+            try {
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                if (!Boolean.valueOf(jsonSet[4])) {</span>
+<span class="nc" id="L238">                    ApplicationInfo appInfo = packageManager.getApplicationInfo(jsonSet[0], 0);</span>
+<span class="nc" id="L239">                    app = new AppIcon(packageManager.getApplicationLabel(appInfo).toString()</span>
+                            , jsonSet[0]
+<span class="nc" id="L241">                            , packageManager.getApplicationIcon(appInfo));</span>
+<span class="nc" id="L242">                    app.setAppClicks(Integer.valueOf(jsonSet[1]));</span>
+<span class="nc" id="L243">                    app.setInstallTime(Long.valueOf(jsonSet[2]));</span>
+<span class="nc" id="L244">                    favoriteList.add(app);</span>
+<span class="nc" id="L245">                } else {</span>
+<span class="nc" id="L246">                    favoriteList.add(generateContact(jsonSet[0]</span>
+                            , jsonSet[1]
+                            , jsonSet[2]
+                            , jsonSet[3]));
+                }
+<span class="nc" id="L251">            } catch (PackageManager.NameNotFoundException e) {</span>
+<span class="nc" id="L252">                e.printStackTrace();</span>
+<span class="nc" id="L253">            }</span>
+<span class="nc" id="L254">        }</span>
+<span class="nc" id="L255">    }</span>
+
+    private AppIcon generateContact(String contactName
+            , String contactImage
+            , String contactNumber
+            , String contactEmail) {
+<span class="nc" id="L261">        AppIcon app = new AppIcon(contactName, contactImage, contactNumber, contactEmail);</span>
+        Drawable appDrawable;
+        try {
+<span class="nc bnc" id="L264" title="All 2 branches missed.">            if (!contactImage.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L265">                appDrawable = Drawable.createFromStream(getActivity()</span>
+<span class="nc" id="L266">                        .getContentResolver()</span>
+<span class="nc" id="L267">                        .openInputStream(Uri.parse(contactImage)), contactImage);</span>
+            } else {
+<span class="nc" id="L269">                appDrawable = ContextCompat.getDrawable(getActivity(),R.drawable.ic_action_person);</span>
+            }
+<span class="nc" id="L271">            app.setAppDrawable(appDrawable);</span>
+<span class="nc" id="L272">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L273">            appDrawable = ContextCompat.getDrawable(getActivity(),R.drawable.ic_action_person);</span>
+<span class="nc" id="L274">            app.setAppDrawable(appDrawable);</span>
+<span class="nc" id="L275">            e.printStackTrace();</span>
+<span class="nc" id="L276">        }</span>
+<span class="nc" id="L277">        return app;</span>
+    }
+
+    @Override
+    public void onStop() {
+<span class="nc" id="L282">        super.onStop();</span>
+<span class="nc" id="L283">        SharedPreferences prefs = getActivity()</span>
+<span class="nc" id="L284">                .getSharedPreferences(&quot;apps_storage&quot;, MODE_PRIVATE);</span>
+<span class="nc" id="L285">        Gson gson = new Gson();</span>
+<span class="nc" id="L286">        List&lt;String[]&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">        for (AppIcon a : getAdapter().getFavoriteList()) {</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">            if (a.getIsContact()) {</span>
+<span class="nc" id="L289">                list.add(a.getGSONset(true));</span>
+            } else {
+<span class="nc" id="L291">                list.add(a.getGSONset(false));</span>
+            }
+<span class="nc" id="L293">        }</span>
+<span class="nc" id="L294">        String json = gson.toJson(list);</span>
+<span class="nc" id="L295">        prefs.edit().putString(&quot;favorite_list&quot;, json).apply();</span>
+<span class="nc" id="L296">    }</span>
+
+    @Override
+    public void onStart() {
+<span class="nc" id="L300">        super.onStart();</span>
+<span class="nc" id="L301">        SharedPreferences prefs = getActivity()</span>
+<span class="nc" id="L302">                .getSharedPreferences(&quot;contacts_storage&quot;, MODE_PRIVATE);</span>
+<span class="nc" id="L303">        Map&lt;String,?&gt; keys = prefs.getAll();</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        for(Map.Entry&lt;String,?&gt; entry : keys.entrySet()) {</span>
+<span class="nc" id="L305">           String[] values = ((String) entry.getValue()).split(&quot;\\|&quot;);</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">            if (values.length == 3) {</span>
+<span class="nc" id="L307">                mAdapter.addIconToFavorites(generateContact(entry.getKey()</span>
+                        , values[0]
+                        , values[1]
+                        , values[2]));
+            } else {
+<span class="nc" id="L312">                mAdapter.addIconToFavorites(generateContact(entry.getKey()</span>
+                        , values[0]
+                        , values[1]
+                        , &quot;&quot;));
+            }
+<span class="nc" id="L317">        }</span>
+<span class="nc" id="L318">        prefs.edit().clear().apply();</span>
+<span class="nc" id="L319">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

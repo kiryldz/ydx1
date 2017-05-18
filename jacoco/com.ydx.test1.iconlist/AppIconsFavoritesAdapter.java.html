@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppIconsFavoritesAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.iconlist</a> &gt; <span class="el_source">AppIconsFavoritesAdapter.java</span></div><h1>AppIconsFavoritesAdapter.java</h1><pre class="source lang-java linenums">package com.ydx.test1.iconlist;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.ydx.test1.MainApp;
+import com.ydx.test1.R;
+import com.ydx.test1.utils.SquareLayout;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AppIconsFavoritesAdapter extends RecyclerView.Adapter&lt;AppIconsFavoritesAdapter.IconViewHolder&gt; {
+
+<span class="nc" id="L27">    private List&lt;AppIcon&gt; favoriteList = new ArrayList&lt;&gt;();</span>
+    private PackageManager pm;
+    private boolean toHide;
+
+    public void setToHide(boolean flag) {
+<span class="nc" id="L32">        toHide = flag;</span>
+<span class="nc" id="L33">    }</span>
+
+<span class="nc" id="L35">    AppIconsFavoritesAdapter(PackageManager pm, List&lt;AppIcon&gt; list, boolean toHide) {</span>
+<span class="nc" id="L36">        this.pm = pm;</span>
+<span class="nc" id="L37">        favoriteList = list;</span>
+<span class="nc" id="L38">        this.toHide = toHide;</span>
+<span class="nc" id="L39">    }</span>
+
+    void addIconToFavorites(AppIcon appIcon) {
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (!getFavoritePackages().contains(appIcon.getAppPackage())) {</span>
+<span class="nc" id="L43">            favoriteList.add(appIcon);</span>
+<span class="nc" id="L44">            notifyItemInserted(favoriteList.size() - 1);</span>
+        }
+<span class="nc" id="L46">    }</span>
+
+    private ArrayList&lt;String&gt; getFavoritePackages() {
+<span class="nc" id="L49">        ArrayList&lt;String&gt; favPackagesList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        for (AppIcon a : favoriteList) {</span>
+<span class="nc" id="L51">            favPackagesList.add(a.getAppPackage());</span>
+<span class="nc" id="L52">        }</span>
+<span class="nc" id="L53">        return favPackagesList;</span>
+    }
+
+    List&lt;AppIcon&gt; getFavoriteList() {
+<span class="nc" id="L57">        return this.favoriteList;</span>
+    }
+
+    void removeFromFavorites(AppIcon a) {
+<span class="nc" id="L61">        String packageName = a.getAppPackage();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        for (int i=0; i&lt;favoriteList.size(); i++) {</span>
+<span class="nc" id="L63">            AppIcon aa = favoriteList.get(i);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            if (packageName.equals(aa.getAppPackage())) {</span>
+<span class="nc" id="L65">                int pos = favoriteList.indexOf(aa);</span>
+<span class="nc" id="L66">                favoriteList.remove(aa);</span>
+<span class="nc" id="L67">                notifyItemRemoved(pos);</span>
+            }
+        }
+<span class="nc" id="L70">    }</span>
+
+    public void clearFavoriteList() {
+<span class="nc" id="L73">        favoriteList.clear();</span>
+<span class="nc" id="L74">    }</span>
+
+    class IconViewHolder extends RecyclerView.ViewHolder {
+        TextView title;
+        ImageView icon;
+        SquareLayout layout;
+
+<span class="nc" id="L81">        IconViewHolder(View view) {</span>
+<span class="nc" id="L82">            super(view);</span>
+<span class="nc" id="L83">            title = (TextView) view.findViewById(R.id.app_title);</span>
+<span class="nc" id="L84">            icon = (ImageView) view.findViewById(R.id.app_icon);</span>
+<span class="nc" id="L85">            layout = (SquareLayout) view.findViewById(R.id.app_icon_whole);</span>
+<span class="nc" id="L86">        }</span>
+    }
+
+    @Override
+    public IconViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+<span class="nc" id="L91">        return new IconViewHolder(LayoutInflater.from(parent.getContext())</span>
+<span class="nc" id="L92">                .inflate(R.layout.icon_element, parent, false));</span>
+    }
+
+    @Override
+    public void onBindViewHolder(final IconViewHolder holder, int position) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (toHide) {</span>
+<span class="nc" id="L98">            holder.layout.setVisibility(View.GONE);</span>
+<span class="nc" id="L99">            return;</span>
+        } else {
+<span class="nc" id="L101">            holder.layout.setVisibility(View.VISIBLE);</span>
+        }
+<span class="nc" id="L103">        final AppIcon icon = favoriteList.get(position);</span>
+<span class="nc" id="L104">        ImageView iconImage = holder.icon;</span>
+<span class="nc" id="L105">        iconImage.setImageDrawable(icon.getAppDrawable());</span>
+<span class="nc" id="L106">        holder.title.setText(icon.getAppName());</span>
+<span class="nc" id="L107">        final Context context = iconImage.getContext();</span>
+<span class="nc" id="L108">        holder.layout.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L111">                icon.appClicked();</span>
+<span class="nc" id="L112">                MainApp.setAtLeastOneItemClicked(true);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                if (!icon.getIsContact()) {</span>
+<span class="nc" id="L114">                    Intent i = pm.getLaunchIntentForPackage(icon.getAppPackage());</span>
+<span class="nc" id="L115">                    context.startActivity(i);</span>
+<span class="nc" id="L116">                } else {</span>
+<span class="nc" id="L117">                    Intent callIntent = new Intent(Intent.ACTION_CALL);</span>
+<span class="nc" id="L118">                    callIntent.setData(Uri.parse(&quot;tel:&quot; + icon.getContactNumber()));</span>
+<span class="nc" id="L119">                    callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)</span>
+                            == PackageManager.PERMISSION_GRANTED) {
+<span class="nc" id="L122">                        context.startActivity(callIntent);</span>
+                    }
+                }
+<span class="nc" id="L125">            }</span>
+        });
+<span class="nc" id="L127">        holder.layout.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {</span>
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu
+                    , View view
+                    , ContextMenu.ContextMenuInfo contextMenuInfo) {
+<span class="nc" id="L132">                contextMenu.add(</span>
+<span class="nc" id="L133">                        holder.getAdapterPosition()</span>
+                        , 1
+                        , 0
+<span class="nc" id="L136">                        , context.getString(R.string.delete_from_favorites))</span>
+<span class="nc" id="L137">                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {</span>
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+<span class="nc" id="L140">                                int pos = holder.getAdapterPosition();</span>
+<span class="nc" id="L141">                                favoriteList.remove(pos);</span>
+<span class="nc" id="L142">                                notifyItemRemoved(pos);</span>
+<span class="nc" id="L143">                                return false;</span>
+                            }
+                        });
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                if (icon.getIsContact()) {</span>
+<span class="nc" id="L147">                    contextMenu.add(</span>
+<span class="nc" id="L148">                        holder.getAdapterPosition()</span>
+                        , 1
+                        , 0
+<span class="nc" id="L151">                        , context.getString(R.string.info))</span>
+<span class="nc" id="L152">                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {</span>
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+<span class="nc" id="L155">                                final AlertDialog.Builder builder = new AlertDialog.Builder(context);</span>
+<span class="nc" id="L156">                                builder.setMessage(context.getString(R.string.email)</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                                        + (icon.getContactEmail().equals(&quot;&quot;)</span>
+<span class="nc" id="L158">                                        ? context.getString(R.string.no_email)</span>
+<span class="nc" id="L159">                                        : icon.getContactEmail()));</span>
+<span class="nc" id="L160">                                builder.setNeutralButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {</span>
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+<span class="nc" id="L163">                                        dialogInterface.dismiss();</span>
+<span class="nc" id="L164">                                    }</span>
+                                });
+<span class="nc" id="L166">                                builder.show();</span>
+<span class="nc" id="L167">                                return false;</span>
+                            }
+                        });
+
+                }
+<span class="nc" id="L172">            }</span>
+        });
+
+<span class="nc" id="L175">    }</span>
+
+    @Override
+    public int getItemCount() {
+<span class="nc" id="L179">        return favoriteList.size();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

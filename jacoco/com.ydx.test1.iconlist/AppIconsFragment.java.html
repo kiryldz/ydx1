@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppIconsFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.iconlist</a> &gt; <span class="el_source">AppIconsFragment.java</span></div><h1>AppIconsFragment.java</h1><pre class="source lang-java linenums">package com.ydx.test1.iconlist;
+
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ydx.test1.utils.Constants;
+import com.ydx.test1.MainApp;
+import com.ydx.test1.R;
+import static android.content.Context.MODE_PRIVATE;
+
+<span class="nc" id="L28">public class AppIconsFragment extends Fragment implements</span>
+        SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private PackageManager manager;
+<span class="nc" id="L32">    private List&lt;AppIcon&gt; iconList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L33">    private List&lt;AppIcon&gt; iconListNew = new ArrayList&lt;&gt;();</span>
+    private AppIconsAdapter mAdapter;
+    private int cellsInLineCount;
+    private SharedPreferences prefs;
+
+    public static AppIconsFragment newInstance() {
+<span class="nc" id="L39">        return new AppIconsFragment();</span>
+    }
+
+    AppIconsAdapter getAdapter() {
+<span class="nc" id="L43">        return mAdapter;</span>
+    }
+
+    private AppIcon addApp(String packageName) {
+<span class="nc" id="L47">        AppIcon app = null;</span>
+        try {
+<span class="nc" id="L49">            ApplicationInfo appInfo = manager.getApplicationInfo(packageName, 0);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (manager.getLaunchIntentForPackage(appInfo.packageName) == null)</span>
+<span class="nc" id="L51">                return null;</span>
+<span class="nc" id="L52">            app = new AppIcon(manager.getApplicationLabel(appInfo).toString()</span>
+                , packageName
+<span class="nc" id="L54">                , manager.getApplicationIcon(appInfo));</span>
+<span class="nc" id="L55">            long installTime = manager.getPackageInfo(packageName,0).firstInstallTime;</span>
+<span class="nc" id="L56">            app.setInstallTime(installTime);</span>
+<span class="nc" id="L57">        } catch (PackageManager.NameNotFoundException e) {</span>
+<span class="nc" id="L58">            e.printStackTrace();</span>
+<span class="nc" id="L59">        }</span>
+<span class="nc" id="L60">        return app;</span>
+    }
+
+    private void notifyInstallDelete() {
+<span class="nc" id="L64">        List&lt;AppIcon&gt; addedApps = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L65">        List&lt;Integer&gt; deletedApps = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L66">        Map&lt;String,?&gt; keys = prefs.getAll();</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        for(Map.Entry&lt;String,?&gt; entry : keys.entrySet()) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            if (entry.getValue().toString().equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L69">                AppIcon app = addApp(entry.getKey());</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                if (app != null) addedApps.add(app);</span>
+            }
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            if (entry.getValue().toString().equals(&quot;-1&quot;)) {</span>
+<span class="nc" id="L73">                deletedApps.add(getPositionOfDeletedApp(entry.getKey()));</span>
+            }
+<span class="nc" id="L75">        }</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (!deletedApps.isEmpty()) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">           for (Integer pos : deletedApps) {</span>
+<span class="nc" id="L78">               mAdapter.removeIcon(pos);</span>
+<span class="nc" id="L79">           }</span>
+        }
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (!addedApps.isEmpty()) {</span>
+<span class="nc" id="L82">            Collections.sort(addedApps, new Comparator&lt;AppIcon&gt;() {</span>
+                @Override
+                public int compare(AppIcon t1, AppIcon t2) {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                    return t1.getInstallTime()&lt;t2.getInstallTime() ? 1 : -1;</span>
+                }
+            });
+<span class="nc" id="L88">            iconListNew.addAll(0, addedApps);</span>
+<span class="nc" id="L89">            iconList.addAll(addedApps);</span>
+        }
+<span class="nc bnc" id="L91" title="All 4 branches missed.">        if (!addedApps.isEmpty() || !deletedApps.isEmpty()) {</span>
+<span class="nc" id="L92">            prefs.edit().clear().apply();</span>
+<span class="nc" id="L93">            mAdapter.updateHeaders();</span>
+<span class="nc" id="L94">            mAdapter.notifyDataSetChanged();</span>
+<span class="nc" id="L95">            addedApps.clear();</span>
+<span class="nc" id="L96">            deletedApps.clear();</span>
+        }
+<span class="nc" id="L98">    }</span>
+
+
+    private int getPositionOfDeletedApp(String packageToDelete) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        for (int i=0; i&lt;iconList.size(); i++) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (iconList.get(i).getAppPackage().equals(packageToDelete)) {</span>
+<span class="nc" id="L104">                return i;</span>
+            }
+        }
+<span class="nc" id="L107">        return -1;</span>
+    }
+
+    private void generateNewList() {
+<span class="nc" id="L111">        iconListNew = new ArrayList&lt;&gt;(iconList);</span>
+<span class="nc" id="L112">        Collections.sort(iconListNew, new Comparator&lt;AppIcon&gt;() {</span>
+            @Override
+            public int compare(AppIcon t1, AppIcon t2) {
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                return t1.getInstallTime()&lt;t2.getInstallTime() ? 1 : -1;</span>
+            }
+        });
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for (int i=0;i&lt;Constants.ICON_LIST_SIZE_LARGE[1];i++) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">            if (i&gt;=iconList.size()) {</span>
+<span class="nc" id="L120">                iconListNew.add(new AppIcon(Constants.EMPTY_ICON, null));</span>
+            }
+        }
+<span class="nc" id="L123">    }</span>
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="nc" id="L128">        View view = inflater.inflate(R.layout.fragment_icon_list,</span>
+                container, false);
+<span class="nc" id="L130">        SharedPreferences sp = PreferenceManager</span>
+<span class="nc" id="L131">                .getDefaultSharedPreferences(getActivity());</span>
+<span class="nc" id="L132">        prefs = getActivity().getApplicationContext().getSharedPreferences(&quot;apps&quot;, MODE_PRIVATE);</span>
+<span class="nc" id="L133">        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);</span>
+<span class="nc" id="L134">        manager = getActivity().getPackageManager();</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (sp.getString(&quot;change_cells&quot;,&quot;1&quot;).equals(&quot;1&quot;)) {</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">            if (getResources().getConfiguration().orientation</span>
+                    == Configuration.ORIENTATION_LANDSCAPE) {
+<span class="nc" id="L138">                cellsInLineCount = Constants.ICON_LIST_SIZE_LARGE[1];</span>
+            } else {
+<span class="nc" id="L140">                cellsInLineCount = Constants.ICON_LIST_SIZE_LARGE[0];</span>
+            }
+        } else {
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (getResources().getConfiguration().orientation</span>
+                    == Configuration.ORIENTATION_LANDSCAPE) {
+<span class="nc" id="L145">                cellsInLineCount = Constants.ICON_LIST_SIZE_STANDART[1];</span>
+            } else {
+<span class="nc" id="L147">                cellsInLineCount = Constants.ICON_LIST_SIZE_STANDART[0];</span>
+            }
+        }
+
+<span class="nc" id="L151">        GridLayoutManager mLayoutManager</span>
+<span class="nc" id="L152">                = new GridLayoutManager(getActivity().getApplicationContext()</span>
+                , cellsInLineCount);
+<span class="nc" id="L154">        recyclerView.setLayoutManager(mLayoutManager);</span>
+<span class="nc" id="L155">        mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {</span>
+            @Override
+            public int getSpanSize(int position) {
+<span class="nc bnc" id="L158" title="All 3 branches missed.">                switch(mAdapter.getItemViewType(position)){</span>
+                    case 1:
+<span class="nc" id="L160">                        return cellsInLineCount;</span>
+                    case 0:
+<span class="nc" id="L162">                        return 1;</span>
+                    default:
+<span class="nc" id="L164">                        return -1;</span>
+                }
+            }
+        });
+<span class="nc" id="L168">        generateApplicationList();</span>
+<span class="nc" id="L169">        notifyInstallDelete();</span>
+<span class="nc" id="L170">        recyclerView.setAdapter(mAdapter);</span>
+<span class="nc" id="L171">        return view;</span>
+    }
+
+    private void generateApplicationListFirstTime() {
+<span class="nc" id="L175">        List&lt;ApplicationInfo&gt; packages</span>
+<span class="nc" id="L176">                = manager.getInstalledApplications(PackageManager.GET_META_DATA);</span>
+<span class="nc" id="L177">        String currentPackage = getActivity().getApplicationContext().getPackageName();</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        for (ApplicationInfo packageInfo : packages) {</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">            if (packageInfo.packageName.equals(currentPackage)</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                    || manager.getLaunchIntentForPackage(packageInfo.packageName) == null) {</span>
+<span class="nc" id="L181">                continue;</span>
+            }
+<span class="nc" id="L183">            AppIcon app = new AppIcon(manager.getApplicationLabel(packageInfo).toString()</span>
+                    , packageInfo.packageName
+<span class="nc" id="L185">                    , manager.getApplicationIcon(packageInfo));</span>
+            try {
+<span class="nc" id="L187">                long installTime = manager</span>
+<span class="nc" id="L188">                        .getPackageInfo(packageInfo.packageName,0)</span>
+                        .firstInstallTime;
+<span class="nc" id="L190">                app.setInstallTime(installTime);</span>
+<span class="nc" id="L191">            } catch (PackageManager.NameNotFoundException e) {</span>
+<span class="nc" id="L192">                app.setInstallTime(-1);</span>
+<span class="nc" id="L193">                e.printStackTrace();</span>
+<span class="nc" id="L194">            }</span>
+<span class="nc" id="L195">            iconList.add(app);</span>
+<span class="nc" id="L196">        }</span>
+<span class="nc" id="L197">        generateNewList();</span>
+<span class="nc" id="L198">        mAdapter = new AppIconsAdapter(this, manager, iconList</span>
+                , iconListNew, cellsInLineCount, true);
+<span class="nc" id="L200">    }</span>
+
+    private void generateApplicationList() {
+<span class="nc" id="L203">        iconList.clear();</span>
+<span class="nc" id="L204">        prefs.edit().clear().apply();</span>
+<span class="nc" id="L205">        Gson gson = new Gson();</span>
+<span class="nc" id="L206">        SharedPreferences prefs = getActivity()</span>
+<span class="nc" id="L207">                .getSharedPreferences(&quot;apps_storage&quot;, MODE_PRIVATE);</span>
+<span class="nc" id="L208">        String json = prefs.getString(&quot;common_list&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (json.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L210">            generateApplicationListFirstTime();</span>
+<span class="nc" id="L211">            return;</span>
+        }
+<span class="nc" id="L213">        Type type = new TypeToken&lt; List &lt; String[] &gt;&gt;() {}.getType();</span>
+<span class="nc" id="L214">        List&lt;String[]&gt; iconListFromStorage = gson.fromJson(json, type);</span>
+<span class="nc" id="L215">        generateAppListFromJson(iconListFromStorage);</span>
+<span class="nc" id="L216">        generateNewList();</span>
+<span class="nc" id="L217">        mAdapter = new AppIconsAdapter(this, manager, iconList</span>
+                , iconListNew, cellsInLineCount, false);
+<span class="nc" id="L219">    }</span>
+
+    private void generateAppListFromJson(List&lt;String[]&gt; list) {
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        for (String[] jsonSet : list) {</span>
+            AppIcon app ;
+            try {
+<span class="nc" id="L225">                ApplicationInfo appInfo = manager.getApplicationInfo(jsonSet[0], 0);</span>
+<span class="nc" id="L226">                app = new AppIcon(manager.getApplicationLabel(appInfo).toString()</span>
+                        , jsonSet[0]
+<span class="nc" id="L228">                        , manager.getApplicationIcon(appInfo));</span>
+<span class="nc" id="L229">                app.setAppClicks(Integer.valueOf(jsonSet[1]));</span>
+<span class="nc" id="L230">                app.setInstallTime(Long.valueOf(jsonSet[2]));</span>
+<span class="nc" id="L231">                iconList.add(app);</span>
+<span class="nc" id="L232">            } catch (PackageManager.NameNotFoundException e) {</span>
+<span class="nc" id="L233">                e.printStackTrace();</span>
+<span class="nc" id="L234">            }</span>
+<span class="nc" id="L235">        }</span>
+<span class="nc" id="L236">    }</span>
+
+    @Override
+    public void onResume() {
+<span class="nc" id="L240">        super.onResume();</span>
+<span class="nc" id="L241">        prefs.registerOnSharedPreferenceChangeListener(this);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if (MainApp.isFirstLaunch()) {</span>
+<span class="nc" id="L243">            MainApp.setIsFirstLaunch(false);</span>
+<span class="nc" id="L244">            return;</span>
+        }
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        if (mAdapter != null) {</span>
+<span class="nc" id="L247">            mAdapter.updateHeaders();</span>
+        }
+<span class="nc" id="L249">    }</span>
+
+    @Override
+    public void onStop() {
+<span class="nc" id="L253">        super.onStop();</span>
+<span class="nc" id="L254">        SharedPreferences prefs = getActivity()</span>
+<span class="nc" id="L255">                .getSharedPreferences(&quot;apps_storage&quot;, MODE_PRIVATE);</span>
+<span class="nc" id="L256">        Gson gson = new Gson();</span>
+<span class="nc" id="L257">        List&lt;String[]&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        for (AppIcon a : getAdapter().getIconList()) {</span>
+<span class="nc" id="L259">            list.add(a.getGSONset(false));</span>
+<span class="nc" id="L260">        }</span>
+<span class="nc" id="L261">        String json = gson.toJson(list);</span>
+<span class="nc" id="L262">        prefs.edit().putString(&quot;common_list&quot;, json).apply();</span>
+<span class="nc" id="L263">    }</span>
+
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,String key) {
+<span class="nc" id="L266">        notifyInstallDelete();</span>
+<span class="nc" id="L267">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

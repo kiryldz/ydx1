@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AllContactsActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.contacts</a> &gt; <span class="el_source">AllContactsActivity.java</span></div><h1>AllContactsActivity.java</h1><pre class="source lang-java linenums">package com.ydx.test1.contacts;
+
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
+import com.ydx.test1.R;
+import com.ydx.test1.imageloader.ImageSaver;
+import java.util.ArrayList;
+import java.util.List;
+
+
+<span class="nc" id="L19">public class AllContactsActivity extends Activity {</span>
+
+    private RecyclerView rvContacts;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L25">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L26">        if (PreferenceManager.getDefaultSharedPreferences(this)</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">                .getString(&quot;change_theme&quot;,&quot;1&quot;).equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L28">            super.setTheme(R.style.AppThemeDark);</span>
+        } else {
+<span class="nc" id="L30">            super.setTheme(R.style.AppThemeLight);</span>
+        }
+<span class="nc" id="L32">        setContentView(R.layout.activity_all_contacts);</span>
+<span class="nc" id="L33">        if (PreferenceManager</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">                .getDefaultSharedPreferences(this).getBoolean(&quot;same_picts_activities&quot;, true)) {</span>
+<span class="nc" id="L35">            ImageSaver.getInstance().loadImage(this, &quot;myImage.png&quot;);</span>
+        } else {
+<span class="nc" id="L37">            ImageSaver.getInstance().loadImage(this, &quot;myImageContacts.png&quot;);</span>
+        }
+<span class="nc" id="L39">        rvContacts = (RecyclerView) findViewById(R.id.rvContacts);</span>
+<span class="nc" id="L40">        getAllContacts();</span>
+<span class="nc" id="L41">    }</span>
+
+    private void getAllContacts() {
+<span class="nc" id="L44">        new AsyncTask&lt;Void, Void, List&lt;ContactVO&gt;&gt;() {</span>
+
+            @Override
+            protected void onPreExecute() {
+<span class="nc" id="L48">                Toast.makeText(AllContactsActivity.this</span>
+                        , R.string.loading_contacts
+<span class="nc" id="L50">                        , Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L51">            }</span>
+
+            @Override
+            protected List&lt;ContactVO&gt; doInBackground(Void... voids) {
+<span class="nc" id="L55">                List&lt;ContactVO&gt; contactVOList = new ArrayList&lt;&gt;();</span>
+                ContactVO contactVO;
+<span class="nc" id="L57">                ContentResolver contentResolver = getContentResolver();</span>
+                try {
+<span class="nc" id="L59">                    Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI</span>
+                            , null
+                            , null
+                            , null
+                            , ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + &quot; ASC&quot;);
+<span class="nc bnc" id="L64" title="All 4 branches missed.">                    if (cursor != null &amp;&amp; cursor.getCount() &gt; 0) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                        while (cursor.moveToNext()) {</span>
+<span class="nc" id="L66">                            int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor</span>
+<span class="nc" id="L67">                                    .getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                            if (hasPhoneNumber &gt; 0) {</span>
+<span class="nc" id="L69">                                String id = cursor.getString(cursor</span>
+<span class="nc" id="L70">                                        .getColumnIndex(ContactsContract.Contacts._ID));</span>
+<span class="nc" id="L71">                                String name = cursor.getString(cursor</span>
+<span class="nc" id="L72">                                        .getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));</span>
+<span class="nc" id="L73">                                String image_uri = cursor.getString(cursor</span>
+<span class="nc" id="L74">                                        .getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));</span>
+
+<span class="nc" id="L76">                                contactVO = new ContactVO();</span>
+<span class="nc" id="L77">                                contactVO.setContactName(name);</span>
+<span class="nc" id="L78">                                contactVO.setContactImage(image_uri);</span>
+
+<span class="nc" id="L80">                                Cursor phoneCursor = contentResolver.query(</span>
+                                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                        null,
+                                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + &quot; = ?&quot;,
+                                        new String[]{id},
+                                        null);
+<span class="nc bnc" id="L86" title="All 4 branches missed.">                                if (phoneCursor != null &amp;&amp; phoneCursor.moveToNext()) {</span>
+<span class="nc" id="L87">                                    String phoneNumber = phoneCursor.getString(phoneCursor</span>
+<span class="nc" id="L88">                                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));</span>
+<span class="nc" id="L89">                                    contactVO.setContactNumber(phoneNumber);</span>
+                                }
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                                if (phoneCursor != null) {</span>
+<span class="nc" id="L93">                                    phoneCursor.close();</span>
+                                }
+<span class="nc" id="L95">                                Cursor emailCursor = contentResolver.query(</span>
+                                        ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                                        null,
+                                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + &quot; = ?&quot;,
+                                        new String[]{id}, null);
+<span class="nc bnc" id="L100" title="All 4 branches missed.">                                while (emailCursor != null &amp;&amp; emailCursor.moveToNext()) {</span>
+<span class="nc" id="L101">                                    String emailId = emailCursor</span>
+<span class="nc" id="L102">                                            .getString(emailCursor.getColumnIndex(ContactsContract</span>
+                                                    .CommonDataKinds.Email.DATA));
+<span class="nc" id="L104">                                    contactVO.setContactEmail(emailId);</span>
+<span class="nc" id="L105">                                }</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                                if (emailCursor != null) {</span>
+<span class="nc" id="L107">                                    emailCursor.close();</span>
+                                }
+<span class="nc" id="L109">                                contactVOList.add(contactVO);</span>
+                            }
+<span class="nc" id="L111">                        }</span>
+<span class="nc" id="L112">                        cursor.close();</span>
+                    }
+<span class="nc" id="L114">                } catch (NullPointerException e) {</span>
+<span class="nc" id="L115">                    e.printStackTrace();</span>
+<span class="nc" id="L116">                }</span>
+<span class="nc" id="L117">                return contactVOList;</span>
+            }
+
+            @Override
+            protected void onPostExecute(List&lt;ContactVO&gt; contactVOList) {
+<span class="nc" id="L122">                AllContactsAdapter contactAdapter = new AllContactsAdapter(contactVOList</span>
+<span class="nc" id="L123">                        , getApplicationContext());</span>
+<span class="nc" id="L124">                rvContacts.setLayoutManager(new LinearLayoutManager(AllContactsActivity.this));</span>
+<span class="nc" id="L125">                rvContacts.setAdapter(contactAdapter);</span>
+<span class="nc" id="L126">            }</span>
+<span class="nc" id="L127">        }.execute();</span>
+<span class="nc" id="L128">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppIconsActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.iconlist</a> &gt; <span class="el_source">AppIconsActivity.java</span></div><h1>AppIconsActivity.java</h1><pre class="source lang-java linenums">package com.ydx.test1.iconlist;
+
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.MenuItem;
+import android.widget.Toast;
+import com.ydx.test1.MainApp;
+import com.ydx.test1.R;
+import com.ydx.test1.contacts.AllContactsActivity;
+import com.ydx.test1.imageloader.ImageSaver;
+import com.ydx.test1.imageloader.ImageService;
+import com.ydx.test1.utils.SettingsFragment;
+import com.ydx.test1.welcomescreen.WelcomeScreenActivity;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.ydx.test1.MainApp.PARAM_RESULT;
+
+<span class="nc" id="L38">public class AppIconsActivity extends AppCompatActivity {</span>
+
+    private DrawerLayout mDrawer;
+    private SharedPreferences sp;
+    private LauncherPagerAdapter mAdapter;
+    private MyBroadcastReceiver mBroadcastReceiver;
+    private Intent serviceIntent;
+    private static final String TAG = &quot;TAG&quot;;
+
+    
+    public LauncherPagerAdapter getmAdapter() {
+<span class="nc" id="L49">        return mAdapter;</span>
+    }
+
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS_CALL = 100;
+
+    private void showContacts() {
+<span class="nc" id="L55">        startActivity(new Intent(this, AllContactsActivity.class));</span>
+<span class="nc" id="L56">    }</span>
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS_CALL) {</span>
+<span class="nc bnc" id="L62" title="All 4 branches missed.">            if (grantResults[0] == PackageManager.PERMISSION_GRANTED</span>
+                    &amp;&amp; grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+<span class="nc" id="L64">                showContacts();</span>
+            } else {
+<span class="nc" id="L66">                Toast.makeText(this</span>
+<span class="nc" id="L67">                        , getString(R.string.grant_permission)</span>
+                        , Toast.LENGTH_SHORT)
+<span class="nc" id="L69">                        .show();</span>
+            }
+        }
+<span class="nc" id="L72">    }</span>
+
+    private void syncGlobalSettings() {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (sp.getString(&quot;change_theme&quot;,&quot;-1&quot;).equals(&quot;-1&quot;)) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            sp.edit().putString(&quot;change_theme&quot;, MainApp.getThemeFlag() ? &quot;1&quot; : &quot;0&quot;).apply();</span>
+        } else {
+<span class="nc" id="L78">            MainApp.setThemeFlag(sp.getString(&quot;change_theme&quot;,&quot;1&quot;).equals(&quot;1&quot;));</span>
+        }
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (sp.getString(&quot;change_cells&quot;,&quot;-1&quot;).equals(&quot;-1&quot;)) {</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            sp.edit().putString(&quot;change_cells&quot;, MainApp.getIsCellsOpt2() ? &quot;1&quot; : &quot;0&quot;).apply();</span>
+        } else {
+<span class="nc" id="L83">            MainApp.setIsCellsOpt2(sp.getString(&quot;change_cells&quot;,&quot;1&quot;).equals(&quot;1&quot;));</span>
+        }
+<span class="nc" id="L85">    }</span>
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L89">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L90">        serviceIntent = new Intent(this, ImageService.class);</span>
+<span class="nc" id="L91">        serviceIntent.putExtra(&quot;isMainActivity&quot;, true);</span>
+<span class="nc" id="L92">        if (getSharedPreferences(&quot;prefs&quot;, Context.MODE_PRIVATE)</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                .getBoolean(&quot;first_run&quot;,true)) {</span>
+<span class="nc" id="L94">            startActivity(new Intent(this, WelcomeScreenActivity.class));</span>
+<span class="nc" id="L95">            finish();</span>
+<span class="nc" id="L96">            return;</span>
+        }
+<span class="nc" id="L98">        sp = PreferenceManager</span>
+<span class="nc" id="L99">                .getDefaultSharedPreferences(this);</span>
+<span class="nc" id="L100">        syncGlobalSettings();</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (sp.getString(&quot;change_theme&quot;,&quot;1&quot;).equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L102">            super.setTheme(R.style.AppThemeDark);</span>
+        } else {
+<span class="nc" id="L104">            super.setTheme(R.style.AppThemeLight);</span>
+        }
+<span class="nc" id="L106">        setContentView(R.layout.activity_main);</span>
+<span class="nc" id="L107">        ImageSaver.getInstance().loadImage(this, sp.getString(&quot;image_name&quot;,null));</span>
+<span class="nc" id="L108">        mBroadcastReceiver = new MyBroadcastReceiver();</span>
+<span class="nc" id="L109">        ViewPager pager = (ViewPager) findViewById(R.id.mainViewPager);</span>
+<span class="nc" id="L110">        mAdapter = new LauncherPagerAdapter(getSupportFragmentManager());</span>
+<span class="nc" id="L111">        pager.setAdapter(mAdapter);</span>
+<span class="nc" id="L112">        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);</span>
+<span class="nc" id="L113">        ActionBar actionBar = getSupportActionBar();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (actionBar != null) {</span>
+<span class="nc" id="L115">            actionBar.hide();</span>
+        }
+<span class="nc" id="L117">        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);</span>
+<span class="nc" id="L118">        setupDrawerContent(nvDrawer);</span>
+<span class="nc" id="L119">    }</span>
+
+    private void setupDrawerContent(NavigationView navigationView) {
+<span class="nc" id="L122">        navigationView.setNavigationItemSelectedListener(</span>
+<span class="nc" id="L123">                new NavigationView.OnNavigationItemSelectedListener() {</span>
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+<span class="nc" id="L126">                        selectDrawerItem(menuItem);</span>
+<span class="nc" id="L127">                        return true;</span>
+                    }
+                });
+<span class="nc" id="L130">    }</span>
+
+    public void applyFragment(boolean showSettings, MenuItem menuItem) {
+<span class="nc" id="L133">        FragmentManager fragmentManager = getSupportFragmentManager();</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (showSettings) {</span>
+<span class="nc" id="L135">            fragmentManager</span>
+<span class="nc" id="L136">                    .beginTransaction()</span>
+<span class="nc" id="L137">                    .replace(R.id.mainLayout, SettingsFragment.newInstance(), &quot;SETTINGS&quot;)</span>
+<span class="nc" id="L138">                    .commit();</span>
+        } else {
+<span class="nc" id="L140">            exitSettings(fragmentManager);</span>
+        }
+<span class="nc" id="L142">        menuItem.setChecked(true);</span>
+<span class="nc" id="L143">        mDrawer.closeDrawers();</span>
+<span class="nc" id="L144">    }</span>
+
+    private void openContacts() {
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">                &amp;&amp; (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                || checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)) {</span>
+<span class="nc" id="L150">            requestPermissions(new String[]</span>
+                            {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE}
+                    , PERMISSIONS_REQUEST_READ_CONTACTS_CALL);
+        } else {
+<span class="nc" id="L154">            showContacts();</span>
+        }
+<span class="nc" id="L156">        mDrawer.closeDrawers();</span>
+<span class="nc" id="L157">    }</span>
+
+    private void selectDrawerItem(MenuItem menuItem) {
+<span class="nc bnc" id="L160" title="All 4 branches missed.">        switch(menuItem.getItemId()) {</span>
+            case R.id.all_icons:
+<span class="nc" id="L162">                applyFragment(false, menuItem);</span>
+<span class="nc" id="L163">                break;</span>
+            case R.id.nav_contacts:
+<span class="nc" id="L165">                openContacts();</span>
+<span class="nc" id="L166">                break;</span>
+            case R.id.nav_settings:
+<span class="nc" id="L168">                applyFragment(true, menuItem);</span>
+<span class="nc" id="L169">                break;</span>
+            default:
+<span class="nc" id="L171">                applyFragment(false, menuItem);</span>
+        }
+<span class="nc" id="L173">    }</span>
+
+
+
+    public class LauncherPagerAdapter extends FragmentStatePagerAdapter {
+        private List&lt;Fragment&gt; list;
+
+<span class="nc" id="L180">        LauncherPagerAdapter(FragmentManager fm) {</span>
+<span class="nc" id="L181">            super(fm);</span>
+<span class="nc" id="L182">            list = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L183">            list.add(0, AppIconsFragment.newInstance());</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">            if (!sp.getBoolean(&quot;hide_favs_fragment&quot;,false)) {</span>
+<span class="nc" id="L185">                list.add(1, AppIconsFavoritesFragment.newInstance());</span>
+            }
+<span class="nc" id="L187">        }</span>
+
+        @Override
+        public Fragment getItem(int pos) {
+<span class="nc" id="L191">            return this.list.get(pos);</span>
+        }
+
+        @Override
+        public int getCount() {
+<span class="nc" id="L196">            return list.size();</span>
+        }
+
+        public void enableFavoriteFragment() {
+<span class="nc" id="L200">            list.add(1, AppIconsFavoritesFragment.newInstance());</span>
+<span class="nc" id="L201">        }</span>
+
+        public void disableFavoriteFragment() {
+<span class="nc" id="L204">            list.remove(1);</span>
+<span class="nc" id="L205">        }</span>
+
+        @Override
+        public int getItemPosition(Object object) {
+<span class="nc" id="L209">            return POSITION_NONE;</span>
+        }
+    }
+
+    private void exitSettings(FragmentManager fragmentManager) {
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (fragmentManager.findFragmentByTag(&quot;SETTINGS&quot;) != null) {</span>
+<span class="nc" id="L215">            fragmentManager</span>
+<span class="nc" id="L216">                    .beginTransaction()</span>
+<span class="nc" id="L217">                    .remove(fragmentManager.findFragmentByTag(&quot;SETTINGS&quot;))</span>
+<span class="nc" id="L218">                    .commit();</span>
+        }
+<span class="nc" id="L220">    }</span>
+
+    @Override
+    public void onBackPressed() {
+<span class="nc" id="L224">        exitSettings(getSupportFragmentManager());</span>
+<span class="nc" id="L225">    }</span>
+
+<span class="nc" id="L227">    private class MyBroadcastReceiver extends BroadcastReceiver {</span>
+
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+<span class="nc" id="L231">            Log.d(TAG, &quot;MyBroadcastReceiver, onReceive&quot;);</span>
+<span class="nc" id="L232">            final String imageName = intent.getStringExtra(PARAM_RESULT);</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">            if (!TextUtils.isEmpty(imageName)) {</span>
+<span class="nc" id="L234">                sp.edit().putString(&quot;image_name&quot;, imageName).apply();</span>
+<span class="nc" id="L235">                sp.edit().putInt(&quot;image_num&quot;, sp.getInt(&quot;image_num&quot;,0) + 1).apply();</span>
+<span class="nc" id="L236">                ImageSaver.getInstance().loadImage(AppIconsActivity.this, imageName);</span>
+            }
+<span class="nc" id="L238">        }</span>
+    }
+
+    @Override
+    protected void onResume() {
+<span class="nc" id="L243">        super.onResume();</span>
+<span class="nc" id="L244">        Log.d(TAG, &quot;MainActivity, onResume, registerReceiver&quot;);</span>
+<span class="nc" id="L245">        registerReceiver(mBroadcastReceiver, new IntentFilter(MainApp.BROADCAST_ACTION));</span>
+<span class="nc" id="L246">    }</span>
+
+    @Override
+    protected void onPause() {
+<span class="nc" id="L250">        Log.d(TAG, &quot;MainActivity, onPause, unregisterReceiver&quot;);</span>
+<span class="nc" id="L251">        unregisterReceiver(mBroadcastReceiver);</span>
+<span class="nc" id="L252">        super.onPause();</span>
+<span class="nc" id="L253">    }</span>
+
+    @Override
+    protected void onStop() {
+<span class="nc" id="L257">        super.onStop();</span>
+<span class="nc" id="L258">        stopService(serviceIntent);</span>
+<span class="nc" id="L259">    }</span>
+
+    @Override
+    protected void onStart() {
+<span class="nc" id="L263">        super.onStart();</span>
+<span class="nc" id="L264">        startService(serviceIntent);</span>
+<span class="nc" id="L265">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

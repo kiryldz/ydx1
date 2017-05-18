@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WelcomeScreenAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.welcomescreen</a> &gt; <span class="el_source">WelcomeScreenAdapter.java</span></div><h1>WelcomeScreenAdapter.java</h1><pre class="source lang-java linenums">package com.ydx.test1.welcomescreen;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableContainer;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.ToggleButton;
+import com.ydx.test1.utils.Constants;
+import com.ydx.test1.MainApp;
+import com.ydx.test1.R;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.ydx.test1.utils.Constants.NUM_WELCOME_PAGES;
+import static com.ydx.test1.welcomescreen.WelcomeScreenFragment.fetchAccentColor;
+
+
+class WelcomeScreenAdapter extends PagerAdapter {
+
+    private Context mContext;
+<span class="nc" id="L30">    private ArrayList&lt;WelcomeScreenInstance&gt; mInstanseList = new ArrayList&lt;&gt;();</span>
+    private View.OnClickListener mListener;
+
+    WelcomeScreenAdapter(Context context
+            , List&lt;WelcomeScreenInstance&gt; mList
+<span class="nc" id="L35">            , View.OnClickListener listener) {</span>
+<span class="nc" id="L36">        mContext = context;</span>
+<span class="nc" id="L37">        mInstanseList = (ArrayList&lt;WelcomeScreenInstance&gt;) mList;</span>
+<span class="nc" id="L38">        mListener = listener;</span>
+<span class="nc" id="L39">    }</span>
+
+    @Override
+    public int getCount() {
+<span class="nc" id="L43">        return mInstanseList.size() + 1;</span>
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        return view == object;</span>
+    }
+
+    private void restartActivityForNewTheme(boolean flag) {
+<span class="nc" id="L52">        MainApp.setThemeFlag(flag);</span>
+<span class="nc" id="L53">        ((Activity)mContext).recreate();</span>
+<span class="nc" id="L54">    }</span>
+
+    private void setSolidColorFromTheme(Button btn) {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (btn instanceof ToggleButton) {</span>
+<span class="nc" id="L58">            StateListDrawable gradientDrawable = (StateListDrawable) btn.getBackground();</span>
+<span class="nc" id="L59">            DrawableContainer.DrawableContainerState drawableContainerState</span>
+<span class="nc" id="L60">                    = (DrawableContainer.DrawableContainerState) gradientDrawable.getConstantState();</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            Drawable[] children =</span>
+                    drawableContainerState != null
+<span class="nc" id="L63">                            ? drawableContainerState.getChildren()</span>
+                            : new Drawable[0];
+<span class="nc" id="L65">            GradientDrawable selectedDrawable = (GradientDrawable) children[0];</span>
+<span class="nc" id="L66">            selectedDrawable.setColor(fetchAccentColor(btn.getContext()));</span>
+        }
+<span class="nc" id="L68">    }</span>
+
+    private void applySettings(final ViewGroup layout) {
+<span class="nc" id="L71">        final ToggleButton light = (ToggleButton) layout.findViewById(R.id.lighThemeChosen);</span>
+<span class="nc" id="L72">        final ToggleButton dark = (ToggleButton) layout.findViewById(R.id.darkThemeChosen);</span>
+<span class="nc" id="L73">        final ToggleButton opt1 = (ToggleButton) layout.findViewById(R.id.cellsCountOpt1);</span>
+<span class="nc" id="L74">        final ToggleButton opt2 = (ToggleButton) layout.findViewById(R.id.cellsCountOpt2);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (MainApp.getThemeFlag()) {</span>
+<span class="nc" id="L76">            dark.setChecked(true);</span>
+<span class="nc" id="L77">            setSolidColorFromTheme(dark);</span>
+<span class="nc" id="L78">            dark.setClickable(false);</span>
+<span class="nc" id="L79">            light.setClickable(true);</span>
+<span class="nc" id="L80">            light.setOnClickListener(new View.OnClickListener() {</span>
+                @Override
+                public void onClick(View view) {
+<span class="nc" id="L83">                    dark.setChecked(false);</span>
+<span class="nc" id="L84">                    restartActivityForNewTheme(false);</span>
+<span class="nc" id="L85">                }</span>
+            });
+        } else {
+<span class="nc" id="L88">            light.setChecked(true);</span>
+<span class="nc" id="L89">            setSolidColorFromTheme(light);</span>
+<span class="nc" id="L90">            light.setClickable(false);</span>
+<span class="nc" id="L91">            dark.setClickable(true);</span>
+<span class="nc" id="L92">            dark.setOnClickListener(new View.OnClickListener() {</span>
+                @Override
+                public void onClick(View view) {
+<span class="nc" id="L95">                    light.setChecked(false);</span>
+<span class="nc" id="L96">                    restartActivityForNewTheme(true);</span>
+<span class="nc" id="L97">                }</span>
+            });
+        }
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (MainApp.getIsCellsOpt2()) {</span>
+<span class="nc" id="L101">            opt2.setChecked(true);</span>
+<span class="nc" id="L102">            setSolidColorFromTheme(opt2);</span>
+<span class="nc" id="L103">            opt2.setClickable(false);</span>
+<span class="nc" id="L104">            opt1.setClickable(true);</span>
+<span class="nc" id="L105">            opt1.setOnClickListener(new View.OnClickListener() {</span>
+                @Override
+                public void onClick(View view) {
+<span class="nc" id="L108">                    MainApp.setIsCellsOpt2(false);</span>
+<span class="nc" id="L109">                    opt2.setChecked(false);</span>
+<span class="nc" id="L110">                    applySettings(layout);</span>
+<span class="nc" id="L111">                }</span>
+            });
+        } else {
+<span class="nc" id="L114">            opt1.setChecked(true);</span>
+<span class="nc" id="L115">            setSolidColorFromTheme(opt1);</span>
+<span class="nc" id="L116">            opt1.setClickable(false);</span>
+<span class="nc" id="L117">            opt2.setClickable(true);</span>
+<span class="nc" id="L118">            opt2.setOnClickListener(new View.OnClickListener() {</span>
+                @Override
+                public void onClick(View view) {
+<span class="nc" id="L121">                    MainApp.setIsCellsOpt2(true);</span>
+<span class="nc" id="L122">                    opt1.setChecked(false);</span>
+<span class="nc" id="L123">                    applySettings(layout);</span>
+<span class="nc" id="L124">                }</span>
+            });
+        }
+<span class="nc" id="L127">    }</span>
+
+    @Override
+    public Object instantiateItem (ViewGroup collection,int position) {
+<span class="nc" id="L131">        LayoutInflater inflater = LayoutInflater.from(mContext);</span>
+        ViewGroup layout;
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (position == NUM_WELCOME_PAGES) {</span>
+<span class="nc" id="L134">            layout = (ViewGroup)</span>
+<span class="nc" id="L135">                    inflater.inflate(R.layout.welcome_page_layout_settings, collection, false);</span>
+<span class="nc" id="L136">            applySettings(layout);</span>
+        } else {
+<span class="nc" id="L138">            WelcomeScreenInstance screenInstance = mInstanseList.get(position);</span>
+<span class="nc" id="L139">            layout = (ViewGroup)</span>
+<span class="nc" id="L140">                    inflater.inflate(R.layout.welcome_page_layout, collection, false);</span>
+<span class="nc" id="L141">            TextView textView = (TextView) layout.findViewById(R.id.welcomeScreenText);</span>
+<span class="nc" id="L142">            ImageView imageView= (ImageView) layout.findViewById(R.id.welcomeScreenImage);</span>
+<span class="nc" id="L143">            imageView.setImageResource(screenInstance.getImgRes());</span>
+<span class="nc" id="L144">            textView.setText(screenInstance.getText());</span>
+        }
+<span class="nc" id="L146">        Button next = (Button) layout.findViewById(R.id.welcomeNextBtn);</span>
+<span class="nc" id="L147">        next.setOnClickListener(mListener);</span>
+<span class="nc" id="L148">        collection.addView(layout);</span>
+<span class="nc" id="L149">        return layout;</span>
+    }
+
+    @Override
+    public void destroyItem(ViewGroup collection, int position, Object view) {
+<span class="nc" id="L154">        collection.removeView((View) view);</span>
+<span class="nc" id="L155">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

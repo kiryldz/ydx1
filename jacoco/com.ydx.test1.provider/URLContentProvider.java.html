@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>URLContentProvider.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.provider</a> &gt; <span class="el_source">URLContentProvider.java</span></div><h1>URLContentProvider.java</h1><pre class="source lang-java linenums">package com.ydx.test1.provider;
+
+
+import android.content.ContentProvider;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import com.ydx.test1.utils.UrlInstance;
+import com.ydx.test1.utils.UrlReaderDbHelper;
+
+<span class="nc" id="L16">public class URLContentProvider extends ContentProvider {</span>
+    // // Uri
+    // authority
+    static final String AUTHORITY = &quot;com.ydx.test1.urls&quot;;
+
+    // path
+    static final String URL_PATH = &quot;URLS&quot;;
+
+    // РћР±С‰РёР№ Uri
+<span class="nc" id="L25">    public static final Uri URL_CONTENT_URI = Uri.parse(&quot;content://&quot;</span>
+            + AUTHORITY + &quot;/&quot; + URL_PATH + &quot;/common&quot;);
+
+    // РўРёРїС‹ РґР°РЅРЅС‹С…
+    // РЅР°Р±РѕСЂ СЃС‚СЂРѕРє
+    static final String URL_CONTENT_TYPE = &quot;vnd.android.cursor.dir/vnd.&quot;
+            + AUTHORITY + &quot;.&quot; + URL_PATH;
+
+    //// UriMatcher
+    // РѕР±С‰РёР№ Uri
+    static final int URI_URLS = 1;
+    // РґР»СЏ РґРѕСЃС‚СѓРїР° РєРѕ РІСЃРµРјСѓ СЃРїРёСЃРєСѓ Uri
+    static final int URI_URLS_GET_ALL = 2;
+
+    // РѕРїРёСЃР°РЅРёРµ Рё СЃРѕР·РґР°РЅРёРµ UriMatcher
+    private static final UriMatcher uriMatcher;
+    static {
+<span class="nc" id="L42">        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);</span>
+<span class="nc" id="L43">        uriMatcher.addURI(AUTHORITY, URL_PATH+ &quot;/common&quot;, URI_URLS);</span>
+<span class="nc" id="L44">        uriMatcher.addURI(AUTHORITY, URL_PATH + &quot;/read_all&quot;, URI_URLS_GET_ALL);</span>
+<span class="nc" id="L45">    }</span>
+
+    UrlReaderDbHelper dbHelper;
+    SQLiteDatabase db;
+
+    public boolean onCreate() {
+<span class="nc" id="L51">        dbHelper = new UrlReaderDbHelper(getContext());</span>
+<span class="nc" id="L52">        return true;</span>
+    }
+
+    // С‡С‚РµРЅРёРµ
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
+                        String[] selectionArgs, String sortOrder) {
+        // РїСЂРѕРІРµСЂСЏРµРј Uri
+<span class="nc bnc" id="L59" title="All 3 branches missed.">        switch (uriMatcher.match(uri)) {</span>
+            case URI_URLS: // РѕР±С‰РёР№ Uri
+                // РµСЃР»Рё СЃРѕСЂС‚РёСЂРѕРІРєР° РЅРµ СѓРєР°Р·Р°РЅР°, СЃС‚Р°РІРёРј СЃРІРѕСЋ - РїРѕ РІСЂРµРјРµРЅРё desc
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                if (TextUtils.isEmpty(sortOrder)) {</span>
+<span class="nc" id="L63">                    sortOrder = UrlInstance.UrlEntry.COLUMN_NAME_TIMESTAMP + &quot; DESC&quot;;</span>
+                }
+                break;
+            case URI_URLS_GET_ALL: // РѕР±С‰РёР№ Uri
+                // РµСЃР»Рё СЃРѕСЂС‚РёСЂРѕРІРєР° РЅРµ СѓРєР°Р·Р°РЅР°, СЃС‚Р°РІРёРј СЃРІРѕСЋ - РїРѕ РІСЂРµРјРµРЅРё desc
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                if (TextUtils.isEmpty(sortOrder)) {</span>
+<span class="nc" id="L69">                    sortOrder = UrlInstance.UrlEntry.COLUMN_NAME_TIMESTAMP + &quot; DESC&quot;;</span>
+                }
+                break;
+            default:
+<span class="nc" id="L73">                throw new IllegalArgumentException(&quot;Wrong URI: &quot; + uri);</span>
+        }
+<span class="nc" id="L75">        db = dbHelper.getWritableDatabase();</span>
+<span class="nc" id="L76">        Cursor cursor = db.query(UrlInstance.UrlEntry.TABLE_NAME, projection, selection,</span>
+                selectionArgs, null, null, sortOrder);
+        // РїСЂРѕСЃРёРј ContentResolver СѓРІРµРґРѕРјР»СЏС‚СЊ СЌС‚РѕС‚ РєСѓСЂСЃРѕСЂ
+        // РѕР± РёР·РјРµРЅРµРЅРёСЏС… РґР°РЅРЅС‹С… РІ URL_CONTENT_URI
+<span class="nc" id="L80">        cursor.setNotificationUri(getContext().getContentResolver(), URL_CONTENT_URI);</span>
+<span class="nc" id="L81">        return cursor;</span>
+    }
+
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (uriMatcher.match(uri) != URI_URLS)</span>
+<span class="nc" id="L86">            throw new IllegalArgumentException(&quot;Wrong URI: &quot; + uri);</span>
+
+<span class="nc" id="L88">        db = dbHelper.getWritableDatabase();</span>
+<span class="nc" id="L89">        long rowID = db.insert(UrlInstance.UrlEntry.TABLE_NAME, null, values);</span>
+<span class="nc" id="L90">        Uri resultUri = ContentUris.withAppendedId(URL_CONTENT_URI, rowID);</span>
+        // СѓРІРµРґРѕРјР»СЏРµРј ContentResolver, С‡С‚Рѕ РґР°РЅРЅС‹Рµ РїРѕ Р°РґСЂРµСЃСѓ resultUri РёР·РјРµРЅРёР»РёСЃСЊ
+<span class="nc" id="L92">        getContext().getContentResolver().notifyChange(resultUri, null);</span>
+<span class="nc" id="L93">        return resultUri;</span>
+    }
+
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+<span class="nc" id="L97">        return 0;</span>
+    }
+
+    public int update(@NonNull Uri uri, ContentValues values, String selection,
+                      String[] selectionArgs) {
+<span class="nc" id="L102">        return 0;</span>
+    }
+
+    public String getType(@NonNull Uri uri) {
+<span class="nc bnc" id="L106" title="All 3 branches missed.">        switch (uriMatcher.match(uri)) {</span>
+            case URI_URLS:
+<span class="nc" id="L108">                return URL_CONTENT_TYPE;</span>
+            case URI_URLS_GET_ALL:
+<span class="nc" id="L110">                return URL_CONTENT_TYPE;</span>
+        }
+<span class="nc" id="L112">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppIcon.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.iconlist</a> &gt; <span class="el_source">AppIcon.java</span></div><h1>AppIcon.java</h1><pre class="source lang-java linenums">package com.ydx.test1.iconlist;
+
+import android.graphics.drawable.Drawable;
+
+class AppIcon {
+    private String appName;
+    private String appPackage;
+    private Drawable appDrawable;
+    private int appClickNum;
+    private long installTime;
+<span class="nc" id="L11">    private boolean isContact = false;</span>
+    private String contactNumber;
+    private String contactImageUri;
+    private String contactEmail;
+
+
+<span class="nc" id="L17">    AppIcon(String appName, String appPackage, Drawable appDrawable) {</span>
+<span class="nc" id="L18">        this.appName = appName;</span>
+<span class="nc" id="L19">        this.appDrawable = appDrawable;</span>
+<span class="nc" id="L20">        this.appPackage = appPackage;</span>
+<span class="nc" id="L21">        appClickNum = 0;</span>
+<span class="nc" id="L22">    }</span>
+
+<span class="nc" id="L24">    AppIcon (String appName, Drawable appDrawable) {</span>
+<span class="nc" id="L25">        this.appName = appName;</span>
+<span class="nc" id="L26">        this.appDrawable = appDrawable;</span>
+<span class="nc" id="L27">        appClickNum = 0;</span>
+<span class="nc" id="L28">    }</span>
+
+    AppIcon (String contactName
+            , String contactImage
+            , String contactNumber
+<span class="nc" id="L33">            , String contactEmail) {</span>
+<span class="nc" id="L34">        this.appName = contactName;</span>
+<span class="nc" id="L35">        this.contactImageUri = contactImage;</span>
+<span class="nc" id="L36">        this.contactNumber = contactNumber;</span>
+<span class="nc" id="L37">        this.appPackage = contactName;</span>
+<span class="nc" id="L38">        this.contactEmail = contactEmail;</span>
+<span class="nc" id="L39">        appClickNum = 0;</span>
+<span class="nc" id="L40">        this.isContact = true;</span>
+<span class="nc" id="L41">    }</span>
+
+    String[] getGSONset(boolean isContact) {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (!isContact) {</span>
+<span class="nc" id="L45">            return new String[]{appPackage</span>
+<span class="nc" id="L46">                    , String.valueOf(appClickNum)</span>
+<span class="nc" id="L47">                    , String.valueOf(installTime)</span>
+<span class="nc" id="L48">                    , String.valueOf(&quot;&quot;)</span>
+<span class="nc" id="L49">                    , String.valueOf(false)};</span>
+        } else {
+<span class="nc" id="L51">            return new String[]{appName</span>
+<span class="nc" id="L52">                    , String.valueOf(contactImageUri)</span>
+<span class="nc" id="L53">                    , String.valueOf(contactNumber)</span>
+<span class="nc" id="L54">                    , String.valueOf(contactEmail)</span>
+<span class="nc" id="L55">                    , String.valueOf(true)};</span>
+        }
+    }
+
+<span class="nc" id="L59">    String getAppPackage() {return appPackage;}</span>
+
+    String getAppName() {
+<span class="nc" id="L62">        return appName;</span>
+    }
+
+    Drawable getAppDrawable() {
+<span class="nc" id="L66">        return appDrawable;</span>
+    }
+
+<span class="nc" id="L69">    boolean getIsContact() {return isContact; }</span>
+
+<span class="nc" id="L71">    String getContactNumber() {return contactNumber; }</span>
+
+    int getAppClickNum() {
+<span class="nc" id="L74">        return appClickNum;</span>
+    }
+
+<span class="nc bnc" id="L77" title="All 2 branches missed.">    void appClicked() { if (!isContact) this.appClickNum++; }</span>
+
+<span class="nc" id="L79">    void setAppClicks(int clicks) {this.appClickNum = clicks; }</span>
+
+<span class="nc" id="L81">    void setAppDrawable(Drawable drawable) {this.appDrawable = drawable; }</span>
+
+    long getInstallTime() {
+<span class="nc" id="L84">        return installTime;</span>
+    }
+
+    void setInstallTime(long installTime) {
+<span class="nc" id="L88">        this.installTime = installTime;</span>
+<span class="nc" id="L89">    }</span>
+
+    String getContactEmail() {
+<span class="nc" id="L92">        return contactEmail;</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

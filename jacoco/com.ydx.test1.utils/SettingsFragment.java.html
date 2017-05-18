@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SettingsFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.utils</a> &gt; <span class="el_source">SettingsFragment.java</span></div><h1>SettingsFragment.java</h1><pre class="source lang-java linenums">package com.ydx.test1.utils;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.EditTextPreference;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.widget.Toast;
+import com.ydx.test1.R;
+import com.ydx.test1.iconlist.AppIconsActivity;
+import com.ydx.test1.iconlist.AppIconsFavoritesAdapter;
+import com.ydx.test1.iconlist.AppIconsFavoritesFragment;
+import com.ydx.test1.imageloader.ImageService;
+
+<span class="nc" id="L20">public class SettingsFragment extends PreferenceFragmentCompat {</span>
+
+    public static SettingsFragment newInstance() {
+<span class="nc" id="L23">        return new SettingsFragment();</span>
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+<span class="nc" id="L28">        setPreferencesFromResource(R.xml.preference_screen, rootKey);</span>
+<span class="nc" id="L29">        CheckBoxPreference hideFavs = (CheckBoxPreference) findPreference(&quot;hide_favs&quot;);</span>
+<span class="nc" id="L30">        hideFavs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {</span>
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+<span class="nc" id="L33">                FragmentManager fm = getFragmentManager();</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">                for (Fragment f : fm.getFragments()) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">                    if (f instanceof AppIconsFavoritesFragment) {</span>
+<span class="nc" id="L36">                        AppIconsFavoritesAdapter adapter</span>
+<span class="nc" id="L37">                                = ((AppIconsFavoritesFragment) f).getAdapter();</span>
+<span class="nc" id="L38">                        adapter.setToHide(newValue.toString().equals(&quot;true&quot;));</span>
+<span class="nc" id="L39">                        adapter.notifyDataSetChanged();</span>
+                    }
+<span class="nc" id="L41">                }</span>
+<span class="nc" id="L42">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L46">        CheckBoxPreference hideFavsFragment</span>
+<span class="nc" id="L47">                = (CheckBoxPreference) findPreference(&quot;hide_favs_fragment&quot;);</span>
+<span class="nc" id="L48">        hideFavsFragment.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {</span>
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+<span class="nc" id="L51">                AppIconsActivity.LauncherPagerAdapter adapter</span>
+<span class="nc" id="L52">                        =((AppIconsActivity)getActivity()).getmAdapter();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (newValue.toString().equals(&quot;true&quot;)) {</span>
+<span class="nc" id="L54">                    adapter.disableFavoriteFragment();</span>
+                } else {
+<span class="nc" id="L56">                    adapter.enableFavoriteFragment();</span>
+                }
+<span class="nc" id="L58">                adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L59">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L63">        Preference delFavs = findPreference(&quot;del_favs&quot;);</span>
+<span class="nc" id="L64">        delFavs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {</span>
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+<span class="nc" id="L67">                FragmentManager fm = getFragmentManager();</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                for (Fragment f : fm.getFragments()) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">                    if (f instanceof AppIconsFavoritesFragment) {</span>
+<span class="nc" id="L70">                        AppIconsFavoritesAdapter adapter</span>
+<span class="nc" id="L71">                                = ((AppIconsFavoritesFragment) f).getAdapter();</span>
+<span class="nc" id="L72">                        adapter.clearFavoriteList();</span>
+<span class="nc" id="L73">                        adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L74">                        Toast.makeText(getContext()</span>
+<span class="nc" id="L75">                                , getString(R.string.fav_cleared)</span>
+<span class="nc" id="L76">                                , Toast.LENGTH_SHORT).show();</span>
+                    }
+<span class="nc" id="L78">                }</span>
+<span class="nc" id="L79">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L83">        final EditTextPreference URLlim = (EditTextPreference) findPreference(&quot;URL_limit&quot;);</span>
+<span class="nc" id="L84">        URLlim.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {</span>
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+<span class="nc" id="L87">                final String prevValidValue = ((EditTextPreference)preference).getText();</span>
+                try {
+<span class="nc" id="L89">                    FragmentManager fm = getFragmentManager();</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                    for (Fragment f : fm.getFragments()) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                        if (f instanceof AppIconsFavoritesFragment) {</span>
+<span class="nc" id="L92">                            ((AppIconsFavoritesFragment)f)</span>
+<span class="nc" id="L93">                                    .setURLlimit(Integer.valueOf(newValue.toString()));</span>
+                        }
+<span class="nc" id="L95">                    }</span>
+<span class="nc" id="L96">                } catch (NumberFormatException e) {</span>
+<span class="nc" id="L97">                    ((EditTextPreference)preference).setText(prevValidValue);</span>
+<span class="nc" id="L98">                    Toast.makeText(getContext()</span>
+<span class="nc" id="L99">                            , getString(R.string.wrong_format)</span>
+<span class="nc" id="L100">                            , Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L101">                }</span>
+<span class="nc" id="L102">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L106">        Preference URLclear = findPreference(&quot;URL_clear&quot;);</span>
+<span class="nc" id="L107">        URLclear.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {</span>
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+<span class="nc" id="L110">                FragmentManager fm = getFragmentManager();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                for (Fragment f : fm.getFragments()) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                    if (f instanceof AppIconsFavoritesFragment) {</span>
+<span class="nc" id="L113">                        ((AppIconsFavoritesFragment)f).clearURLinDB();</span>
+<span class="nc" id="L114">                        Toast.makeText(getContext()</span>
+<span class="nc" id="L115">                                , getString(R.string.URL_cleared)</span>
+<span class="nc" id="L116">                                , Toast.LENGTH_SHORT).show();</span>
+                    }
+<span class="nc" id="L118">                }</span>
+<span class="nc" id="L119">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L123">        ListPreference themeSelector = (ListPreference) findPreference(&quot;change_theme&quot;);</span>
+<span class="nc" id="L124">        ListPreference cellsSelector = (ListPreference) findPreference(&quot;change_cells&quot;);</span>
+<span class="nc" id="L125">        themeSelector.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {</span>
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+<span class="nc" id="L128">                getActivity().recreate();</span>
+<span class="nc" id="L129">                return true;</span>
+            }
+        });
+<span class="nc" id="L132">        cellsSelector.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {</span>
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+<span class="nc" id="L135">                getActivity().recreate();</span>
+<span class="nc" id="L136">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L140">        Preference updPictNow = findPreference(&quot;upd_pict_now&quot;);</span>
+<span class="nc" id="L141">        updPictNow.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {</span>
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+<span class="nc" id="L144">                Context context = SettingsFragment.this.getActivity();</span>
+<span class="nc" id="L145">                Intent i = new Intent(context, ImageService.class);</span>
+<span class="nc" id="L146">                i.putExtra(&quot;ZERO_DELAY&quot;, true);</span>
+<span class="nc" id="L147">                context.stopService(i);</span>
+<span class="nc" id="L148">                context.startService(i);</span>
+<span class="nc" id="L149">                Toast.makeText(getContext()</span>
+<span class="nc" id="L150">                        , getString(R.string.updating)</span>
+<span class="nc" id="L151">                        , Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L152">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L156">        ListPreference changeUpdPictInterval = (ListPreference) findPreference(&quot;change_upd_pict_interval&quot;);</span>
+<span class="nc" id="L157">        changeUpdPictInterval.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {</span>
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+<span class="nc" id="L160">                Context context = SettingsFragment.this.getActivity();</span>
+<span class="nc" id="L161">                Intent i = new Intent(context, ImageService.class);</span>
+<span class="nc" id="L162">                context.stopService(i);</span>
+<span class="nc" id="L163">                context.startService(i);</span>
+<span class="nc" id="L164">                return true;</span>
+            }
+        });
+<span class="nc" id="L167">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WelcomeScreenFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.welcomescreen</a> &gt; <span class="el_source">WelcomeScreenFragment.java</span></div><h1>WelcomeScreenFragment.java</h1><pre class="source lang-java linenums">package com.ydx.test1.welcomescreen;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import com.viewpagerindicator.CirclePageIndicator;
+import com.ydx.test1.iconlist.AppIconsActivity;
+import com.ydx.test1.utils.Constants;
+import com.ydx.test1.R;
+import java.util.ArrayList;
+import static com.ydx.test1.utils.Constants.NUM_WELCOME_PAGES;
+import static com.ydx.test1.utils.Constants.welcomeScreenPictures;
+import static com.ydx.test1.utils.Constants.welcomeScreenText;
+
+
+<span class="nc" id="L23">public class WelcomeScreenFragment extends Fragment {</span>
+
+    private ViewPager mViewPager;
+<span class="nc" id="L26">    private ArrayList&lt;WelcomeScreenInstance&gt; mList = new ArrayList&lt;&gt;();</span>
+
+    static int fetchAccentColor(Context ctx) {
+<span class="nc" id="L29">        TypedValue typedValue = new TypedValue();</span>
+<span class="nc" id="L30">        TypedArray a = ctx.obtainStyledAttributes(typedValue.data</span>
+                , new int[] { R.attr.colorAccent });
+<span class="nc" id="L32">        int color = a.getColor(0, 0);</span>
+<span class="nc" id="L33">        a.recycle();</span>
+<span class="nc" id="L34">        return color;</span>
+    }
+
+    private void generateFakeData() {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        for (int i = 0; i &lt; NUM_WELCOME_PAGES; i++) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">            if (i == 0) {</span>
+<span class="nc" id="L40">                String tmp = getString(R.string.app_name)</span>
+<span class="nc" id="L41">                        + System.getProperty(&quot;line.separator&quot;)</span>
+<span class="nc" id="L42">                        + getString(welcomeScreenText[i]);</span>
+<span class="nc" id="L43">                mList.add(new WelcomeScreenInstance(tmp,welcomeScreenPictures[i]));</span>
+<span class="nc" id="L44">            } else {</span>
+<span class="nc" id="L45">                mList.add(new WelcomeScreenInstance(</span>
+<span class="nc" id="L46">                        getString(welcomeScreenText[i])</span>
+                        ,welcomeScreenPictures[i]));
+            }
+        }
+<span class="nc" id="L50">    }</span>
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L54">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L55">    }</span>
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="nc" id="L60">        int ind_to_start = getActivity().getIntent().getIntExtra(&quot;num_to_start&quot;,0);</span>
+<span class="nc" id="L61">        View view = inflater.inflate(R.layout.fragment_welcome_screen, container, false);</span>
+<span class="nc" id="L62">        generateFakeData();</span>
+<span class="nc" id="L63">        mViewPager = (ViewPager) view.findViewById(R.id.welcomeScreenViewPager);</span>
+<span class="nc" id="L64">        View.OnClickListener listener = new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                if (NUM_WELCOME_PAGES == mViewPager.getCurrentItem()) {</span>
+<span class="nc" id="L68">                    getActivity()</span>
+<span class="nc" id="L69">                            .getSharedPreferences(&quot;prefs&quot;, Context.MODE_PRIVATE)</span>
+<span class="nc" id="L70">                            .edit()</span>
+<span class="nc" id="L71">                            .putBoolean(&quot;first_run&quot;,false)</span>
+<span class="nc" id="L72">                            .apply();</span>
+<span class="nc" id="L73">                    startActivity(new Intent(getActivity(), AppIconsActivity.class));</span>
+<span class="nc" id="L74">                    getActivity().finish();</span>
+                } else {
+<span class="nc" id="L76">                    mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);</span>
+                }
+<span class="nc" id="L78">            }</span>
+        };
+<span class="nc" id="L80">        WelcomeScreenAdapter mAdapter = new WelcomeScreenAdapter(getContext(), mList, listener);</span>
+<span class="nc" id="L81">        mViewPager.setAdapter(mAdapter);</span>
+<span class="nc" id="L82">        mViewPager.setCurrentItem(ind_to_start);</span>
+<span class="nc" id="L83">        CirclePageIndicator circlePageIndicator = (CirclePageIndicator)</span>
+<span class="nc" id="L84">                view.findViewById(R.id.titles);</span>
+<span class="nc" id="L85">        circlePageIndicator.setRadius(20f);</span>
+<span class="nc" id="L86">        circlePageIndicator.setFillColor(fetchAccentColor(getContext()));</span>
+<span class="nc" id="L87">        circlePageIndicator.setViewPager(mViewPager);</span>
+<span class="nc" id="L88">        return view;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

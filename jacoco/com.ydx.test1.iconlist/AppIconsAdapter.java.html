@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppIconsAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.iconlist</a> &gt; <span class="el_source">AppIconsAdapter.java</span></div><h1>AppIconsAdapter.java</h1><pre class="source lang-java linenums">package com.ydx.test1.iconlist;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.ydx.test1.MainApp;
+import com.ydx.test1.R;
+import com.ydx.test1.utils.Constants;
+import com.ydx.test1.utils.SquareLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+class AppIconsAdapter extends RecyclerView.Adapter&lt;RecyclerView.ViewHolder&gt; {
+
+    private PackageManager manager;
+    private AppIconsFragment fragment;
+    private List&lt;AppIcon&gt; iconList;
+    private List&lt;AppIcon&gt; iconListNew;
+    private List&lt;AppIcon&gt; iconListFrequent;
+    private List&lt;AppIcon&gt; iconBuffer;
+    private int cellsInLineCount;
+
+    List&lt;AppIcon&gt; getIconList() {
+<span class="nc" id="L36">        return iconList;</span>
+    }
+
+    void updateHeaders() {
+<span class="nc" id="L40">        int bufSize = iconBuffer.size();</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        for (int i=0;i&lt;iconBuffer.size();i++) {</span>
+<span class="nc" id="L42">            AppIcon a = iconBuffer.get(i);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">            if (iconListFrequent.contains(a)) {</span>
+<span class="nc" id="L44">                iconListFrequent.remove(a);</span>
+            }
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (iconListNew.contains(a)) {</span>
+<span class="nc" id="L47">                iconListNew.remove(a);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">                if (iconList.size() &lt; Constants.ICON_LIST_SIZE_LARGE[1]) {</span>
+<span class="nc" id="L49">                    iconListNew.add(new AppIcon(Constants.EMPTY_ICON,null));</span>
+                } else {
+<span class="nc" id="L51">                    iconListNew.add(null);</span>
+                }
+            }
+        }
+<span class="nc" id="L55">        iconBuffer.clear();</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">        if (MainApp.isAtLeastOneItemClicked() || bufSize &gt; 0) {</span>
+<span class="nc" id="L57">            updateHeaderLists();</span>
+        }
+<span class="nc" id="L59">    }</span>
+
+    private void updateHeaderLists() {
+<span class="nc" id="L62">        List&lt;AppIcon&gt; tmp = new ArrayList&lt;&gt;(iconList);</span>
+<span class="nc" id="L63">        Collections.sort(tmp, new Comparator&lt;AppIcon&gt;() {</span>
+            @Override
+            public int compare(AppIcon a1, AppIcon a2) {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                return a1.getAppClickNum() &lt; a2.getAppClickNum() ? 1 : -1;</span>
+            }
+        });
+<span class="nc" id="L69">        iconListFrequent = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (int i = 0; i &lt; Constants.MIN(cellsInLineCount,tmp.size()); i++) {</span>
+<span class="nc" id="L71">            iconListFrequent.add(tmp.get(i));</span>
+        }
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (iconListFrequent.size() &lt; cellsInLineCount) {</span>
+<span class="nc" id="L74">            int sz = iconListFrequent.size();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            for (int i=0;i&lt;cellsInLineCount-sz;i++) {</span>
+<span class="nc" id="L76">                iconListFrequent.add(new AppIcon(Constants.EMPTY_ICON,null));</span>
+            }
+        }
+<span class="nc" id="L79">        AppIcon tmpIcon = null;</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        for (int i=0;i&lt;Constants.ICON_LIST_SIZE_LARGE[1];i++) {</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (iconListNew.get(i) != null) {</span>
+<span class="nc" id="L82">                tmpIcon = iconListNew.get(i);</span>
+            } else {
+                int k;
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                if (tmpIcon != null) {</span>
+<span class="nc" id="L86">                    k = iconList.indexOf(tmpIcon);</span>
+                } else {
+<span class="nc" id="L88">                    k = 0;</span>
+                }
+<span class="nc" id="L90">                tmpIcon = iconList.get((k+1)%iconList.size());</span>
+<span class="nc" id="L91">                iconListNew.set(i,tmpIcon);</span>
+            }
+        }
+<span class="nc" id="L94">        notifyItemRangeChanged(1, 2 * cellsInLineCount + 1);</span>
+<span class="nc" id="L95">    }</span>
+
+    private class HeaderHolder extends RecyclerView.ViewHolder {
+        TextView title;
+
+<span class="nc" id="L100">        HeaderHolder(View view) {</span>
+<span class="nc" id="L101">            super(view);</span>
+<span class="nc" id="L102">            title = (TextView) view.findViewById(R.id.headerId);</span>
+<span class="nc" id="L103">        }</span>
+    }
+
+    private class IconViewHolder extends RecyclerView.ViewHolder {
+        TextView title;
+        ImageView icon;
+        SquareLayout layout;
+
+<span class="nc" id="L111">        IconViewHolder(View view) {</span>
+<span class="nc" id="L112">            super(view);</span>
+<span class="nc" id="L113">            title = (TextView) view.findViewById(R.id.app_title);</span>
+<span class="nc" id="L114">            icon = (ImageView) view.findViewById(R.id.app_icon);</span>
+<span class="nc" id="L115">            layout = (SquareLayout) view.findViewById(R.id.app_icon_whole);</span>
+<span class="nc" id="L116">        }</span>
+    }
+
+    AppIconsAdapter(final AppIconsFragment fragment
+            , final PackageManager manager
+            , final List&lt;AppIcon&gt; iconList
+            , final  List&lt;AppIcon&gt; iconListNew
+            , int cellsInLineCount
+<span class="nc" id="L124">            , boolean isInitial) {</span>
+<span class="nc" id="L125">        this.fragment = fragment;</span>
+<span class="nc" id="L126">        this.manager = manager;</span>
+<span class="nc" id="L127">        this.iconList = iconList;</span>
+<span class="nc" id="L128">        this.cellsInLineCount = cellsInLineCount;</span>
+<span class="nc" id="L129">        this.iconListNew = iconListNew;</span>
+<span class="nc" id="L130">        iconBuffer = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (isInitial) {</span>
+<span class="nc" id="L132">            iconListFrequent = new ArrayList&lt;&gt;(iconListNew);</span>
+        } else {
+<span class="nc" id="L134">            updateHeaderLists();</span>
+        }
+<span class="nc" id="L136">    }</span>
+
+    @Override
+    public int getItemViewType(int position) {
+<span class="nc bnc" id="L140" title="All 6 branches missed.">        if (position == 0</span>
+                || position == cellsInLineCount+1
+                || position == (cellsInLineCount+1)*2) {
+<span class="nc" id="L143">            return 1;</span>
+        }
+<span class="nc" id="L145">        return 0;</span>
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView;
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (viewType == 0) {</span>
+<span class="nc" id="L152">            itemView = LayoutInflater.from(parent.getContext())</span>
+<span class="nc" id="L153">                    .inflate(R.layout.icon_element, parent, false);</span>
+<span class="nc" id="L154">            return new IconViewHolder(itemView);</span>
+        } else {
+<span class="nc" id="L156">            itemView = LayoutInflater.from(parent.getContext())</span>
+<span class="nc" id="L157">                    .inflate(R.layout.header, parent, false);</span>
+<span class="nc" id="L158">            return new HeaderHolder(itemView);</span>
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        if (holder.getItemViewType() == 1) {</span>
+<span class="nc" id="L165">            TextView headerText = ((HeaderHolder)holder).title;</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            if (position == 0) {</span>
+<span class="nc" id="L167">                headerText.setText(headerText.getContext().getString(R.string.header_popular));</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            } else if (position == cellsInLineCount+1) {</span>
+<span class="nc" id="L169">                headerText.setText(headerText.getContext().getString(R.string.header_new));</span>
+            } else {
+<span class="nc" id="L171">                headerText.setVisibility(View.GONE);</span>
+            }
+<span class="nc" id="L173">            return;</span>
+        }
+        final int currentBlockPos;
+        final AppIcon icon;
+<span class="nc" id="L177">        final IconViewHolder iconViewHolder = (IconViewHolder) holder;</span>
+<span class="nc bnc" id="L178" title="All 4 branches missed.">        if (position &gt; 0 &amp;&amp; position &lt; cellsInLineCount + 1) {</span>
+<span class="nc" id="L179">            currentBlockPos = position - 1;</span>
+<span class="nc" id="L180">            icon = iconListFrequent.get(currentBlockPos);</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">            if (icon.getAppName().equals(Constants.EMPTY_ICON)) {</span>
+<span class="nc" id="L182">                iconViewHolder.layout.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L183">                iconViewHolder.layout.setClickable(false);</span>
+            }
+        }
+<span class="nc bnc" id="L186" title="All 4 branches missed.">        else if (position &gt; cellsInLineCount + 1 &amp;&amp; position &lt; (cellsInLineCount * 2 + 2)){</span>
+<span class="nc" id="L187">            currentBlockPos = (position - 2) - cellsInLineCount;</span>
+<span class="nc" id="L188">            icon = iconListNew.get(currentBlockPos);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">            if (icon.getAppName().equals(Constants.EMPTY_ICON)) {</span>
+<span class="nc" id="L190">                iconViewHolder.layout.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L191">                iconViewHolder.layout.setClickable(false);</span>
+            }
+        }
+        else {
+<span class="nc" id="L195">            currentBlockPos = position - (2 * cellsInLineCount + 3) ;</span>
+<span class="nc" id="L196">            icon = iconList.get(currentBlockPos);</span>
+        }
+<span class="nc" id="L198">        iconViewHolder.title.setText(icon.getAppName());</span>
+<span class="nc" id="L199">        ImageView iconImage = iconViewHolder.icon;</span>
+<span class="nc" id="L200">        iconImage.setImageDrawable(icon.getAppDrawable());</span>
+<span class="nc" id="L201">        final Context context = iconImage.getContext();</span>
+<span class="nc" id="L202">        iconViewHolder.layout.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L205">                icon.appClicked();</span>
+<span class="nc" id="L206">                MainApp.setAtLeastOneItemClicked(true);</span>
+<span class="nc" id="L207">                Intent i = manager.getLaunchIntentForPackage(icon.getAppPackage());</span>
+<span class="nc" id="L208">                context.startActivity(i);</span>
+<span class="nc" id="L209">            }</span>
+        });
+<span class="nc" id="L211">        iconViewHolder.layout.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {</span>
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu
+                    , View view
+                    , ContextMenu.ContextMenuInfo contextMenuInfo) {
+<span class="nc bnc" id="L216" title="All 2 branches missed.">                if ((iconViewHolder.getAdapterPosition() &gt;= (cellsInLineCount * 2 + 2))) {</span>
+<span class="nc" id="L217">                    contextMenu.add(</span>
+<span class="nc" id="L218">                            iconViewHolder.getAdapterPosition()</span>
+                            , 1
+                            , 0
+<span class="nc" id="L221">                            , context.getString(R.string.delete))</span>
+<span class="nc" id="L222">                            .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {</span>
+                                @Override
+                                public boolean onMenuItemClick(MenuItem menuItem) {
+<span class="nc" id="L225">                                    Intent intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);</span>
+<span class="nc" id="L226">                                    intent.setData(Uri.parse(&quot;package:&quot;</span>
+<span class="nc" id="L227">                                        + icon.getAppPackage()));</span>
+<span class="nc" id="L228">                                    fragment.startActivity(intent);</span>
+<span class="nc" id="L229">                                    return false;</span>
+                                }
+                            });
+<span class="nc" id="L232">                    contextMenu.add(</span>
+<span class="nc" id="L233">                            iconViewHolder.getAdapterPosition()</span>
+                            , 0
+                            , 0
+<span class="nc" id="L236">                            , context.getString(R.string.info)).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {</span>
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+<span class="nc" id="L239">                            Intent i = new Intent(android.provider.Settings</span>
+                                    .ACTION_APPLICATION_DETAILS_SETTINGS);
+<span class="nc" id="L241">                            i.addCategory(Intent.CATEGORY_DEFAULT);</span>
+<span class="nc" id="L242">                            i.setData(Uri.parse(&quot;package:&quot; + icon.getAppPackage()));</span>
+<span class="nc" id="L243">                            fragment.startActivity(i);</span>
+<span class="nc" id="L244">                            return false;</span>
+                        }
+                    });
+                }
+<span class="nc" id="L248">                contextMenu.add(</span>
+<span class="nc" id="L249">                        iconViewHolder.getAdapterPosition()</span>
+                        , 0
+                        , 0
+<span class="nc" id="L252">                        , context.getString(R.string.add_to_favorites)).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {</span>
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+<span class="nc bnc" id="L255" title="All 2 branches missed.">                        for (Fragment f : fragment.getFragmentManager().getFragments()) {</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">                            if (f instanceof AppIconsFavoritesFragment) {</span>
+<span class="nc" id="L257">                                ((AppIconsFavoritesFragment)f)</span>
+<span class="nc" id="L258">                                        .getAdapter().addIconToFavorites(icon);</span>
+                            }
+<span class="nc" id="L260">                        }</span>
+<span class="nc" id="L261">                        return false;</span>
+                    }
+                });
+<span class="nc" id="L264">            }</span>
+        });
+<span class="nc" id="L266">    }</span>
+
+    void removeIcon(int pos) {
+<span class="nc" id="L269">        AppIcon a = iconList.get(pos);</span>
+<span class="nc" id="L270">        iconList.remove(a);</span>
+<span class="nc" id="L271">        iconBuffer.add(a);</span>
+        try {
+<span class="nc bnc" id="L273" title="All 2 branches missed.">            for (Fragment f : fragment.getFragmentManager().getFragments()) {</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">                if (f instanceof AppIconsFavoritesFragment) {</span>
+<span class="nc" id="L275">                    ((AppIconsFavoritesFragment) f)</span>
+<span class="nc" id="L276">                            .getAdapter().removeFromFavorites(a);</span>
+                }
+<span class="nc" id="L278">            }</span>
+<span class="nc" id="L279">        } catch (NullPointerException e) {</span>
+<span class="nc" id="L280">            e.printStackTrace();</span>
+<span class="nc" id="L281">        }</span>
+<span class="nc" id="L282">        notifyItemRemoved(pos + (2 * cellsInLineCount + 3));</span>
+<span class="nc" id="L283">    }</span>
+
+    @Override
+    public int getItemCount() {
+<span class="nc" id="L287">        return iconList.size()</span>
+                + cellsInLineCount * 2
+                + 3;
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

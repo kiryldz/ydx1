@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AllContactsAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.contacts</a> &gt; <span class="el_source">AllContactsAdapter.java</span></div><h1>AllContactsAdapter.java</h1><pre class="source lang-java linenums">package com.ydx.test1.contacts;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.ydx.test1.R;
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
+
+class AllContactsAdapter extends RecyclerView.Adapter&lt;AllContactsAdapter.ContactViewHolder&gt; {
+
+    private List&lt;ContactVO&gt; contactVOList;
+    private Context mContext;
+
+<span class="nc" id="L32">    AllContactsAdapter(List&lt;ContactVO&gt; contactVOList, Context mContext) {</span>
+<span class="nc" id="L33">        this.contactVOList = new ArrayList&lt;&gt;(contactVOList);</span>
+<span class="nc" id="L34">        this.mContext = mContext;</span>
+<span class="nc" id="L35">    }</span>
+
+    @Override
+    public ContactViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+<span class="nc" id="L39">        View view = LayoutInflater.from(mContext).inflate(R.layout.single_contact_view</span>
+                , parent, false);
+<span class="nc" id="L41">        return new ContactViewHolder(view);</span>
+    }
+
+    @Override
+    public void onBindViewHolder(final ContactViewHolder holder, int position) {
+<span class="nc" id="L46">        final ContactVO contactVO = contactVOList.get(position);</span>
+<span class="nc" id="L47">        holder.tvContactName.setText(contactVO.getContactName());</span>
+<span class="nc" id="L48">        holder.tvPhoneNumber.setText(contactVO.getContactNumber());</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (contactVO.getContactImage() != null) {</span>
+<span class="nc" id="L50">            holder.ivContactImage.setImageURI(Uri.parse(contactVO.getContactImage()));</span>
+        } else {
+<span class="nc" id="L52">            holder.ivContactImage</span>
+<span class="nc" id="L53">                    .setImageDrawable(ContextCompat</span>
+<span class="nc" id="L54">                            .getDrawable(mContext, R.drawable.ic_action_person));</span>
+        }
+<span class="nc" id="L56">        holder.lyContact.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L59">                Intent callIntent = new Intent(Intent.ACTION_CALL);</span>
+<span class="nc" id="L60">                callIntent.setData(Uri.parse(&quot;tel:&quot; + contactVO.getContactNumber()));</span>
+<span class="nc" id="L61">                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CALL_PHONE)</span>
+                        == PackageManager.PERMISSION_GRANTED) {
+<span class="nc" id="L64">                    mContext.startActivity(callIntent);</span>
+                }
+<span class="nc" id="L66">            }</span>
+        });
+<span class="nc" id="L68">        holder.lyContact.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {</span>
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu
+                    , View view
+                    , ContextMenu.ContextMenuInfo contextMenuInfo) {
+<span class="nc" id="L73">                contextMenu.add(</span>
+<span class="nc" id="L74">                        holder.getAdapterPosition()</span>
+                        , 0
+                        , 0
+<span class="nc" id="L77">                        , mContext.getString(R.string.add_to_favorites)).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {</span>
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+<span class="nc" id="L80">                        SharedPreferences.Editor prefs = mContext</span>
+<span class="nc" id="L81">                                .getSharedPreferences(&quot;contacts_storage&quot;, MODE_PRIVATE).edit();</span>
+<span class="nc" id="L82">                        String set = &quot;&quot;;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                        set = set.concat(contactVO.getContactImage() == null</span>
+<span class="nc" id="L84">                                ? &quot;&quot; : contactVO.getContactImage()) + &quot;|&quot;;</span>
+<span class="nc" id="L85">                        set = set.concat(contactVO.getContactNumber()) + &quot;|&quot;;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                        set = set.concat(contactVO.getContactEmail() == null</span>
+<span class="nc" id="L87">                                ? &quot;&quot; : contactVO.getContactEmail()) + &quot;|&quot;;</span>
+<span class="nc" id="L88">                        prefs.putString(contactVO.getContactName()</span>
+<span class="nc" id="L89">                                , set.substring(0, set.length()-1)).apply();</span>
+<span class="nc" id="L90">                        return false;</span>
+                    }
+                });
+<span class="nc" id="L93">                contextMenu.add(</span>
+<span class="nc" id="L94">                        holder.getAdapterPosition()</span>
+                        , 0
+                        , 0
+<span class="nc" id="L97">                        , mContext.getString(R.string.info)).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {</span>
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                        Toast.makeText(mContext, contactVO.getContactEmail() == null</span>
+<span class="nc" id="L101">                                    ? mContext.getString(R.string.no_email)</span>
+<span class="nc" id="L102">                                    : mContext.getString(R.string.email)</span>
+<span class="nc" id="L103">                                        + contactVO.getContactEmail()</span>
+                                ,Toast.LENGTH_SHORT)
+<span class="nc" id="L105">                                .show();</span>
+<span class="nc" id="L106">                        return false;</span>
+                    }
+                });
+<span class="nc" id="L109">            }</span>
+        });
+
+<span class="nc" id="L112">    }</span>
+
+    @Override
+    public int getItemCount() {
+<span class="nc" id="L116">        return contactVOList.size();</span>
+    }
+
+    class ContactViewHolder extends RecyclerView.ViewHolder{
+
+        ImageView ivContactImage;
+        TextView tvContactName;
+        TextView tvPhoneNumber;
+        LinearLayout lyContact;
+
+<span class="nc" id="L126">        ContactViewHolder(View itemView) {</span>
+<span class="nc" id="L127">            super(itemView);</span>
+<span class="nc" id="L128">            ivContactImage = (ImageView) itemView.findViewById(R.id.ivContactImage);</span>
+<span class="nc" id="L129">            tvContactName = (TextView) itemView.findViewById(R.id.tvContactName);</span>
+<span class="nc" id="L130">            tvPhoneNumber = (TextView) itemView.findViewById(R.id.tvPhoneNumber);</span>
+<span class="nc" id="L131">            lyContact = (LinearLayout) itemView.findViewById(R.id.lyContact);</span>
+<span class="nc" id="L132">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

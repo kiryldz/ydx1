@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PackageChangeStatusReceiver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.utils</a> &gt; <span class="el_source">PackageChangeStatusReceiver.java</span></div><h1>PackageChangeStatusReceiver.java</h1><pre class="source lang-java linenums">package com.ydx.test1.utils;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+
+<span class="nc" id="L8">public class PackageChangeStatusReceiver extends BroadcastReceiver {</span>
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+<span class="nc" id="L12">        SharedPreferences preferences = context.getApplicationContext()</span>
+<span class="nc" id="L13">                .getSharedPreferences(&quot;apps&quot;, Context.MODE_PRIVATE);</span>
+<span class="nc" id="L14">        if (intent.getAction()</span>
+<span class="nc bnc" id="L15" title="All 2 branches missed.">                .equals(&quot;android.intent.action.PACKAGE_ADDED&quot;)) {</span>
+<span class="nc" id="L16">            preferences.edit()</span>
+<span class="nc" id="L17">                    .putString(intent.getData().getSchemeSpecificPart(), &quot;1&quot;)</span>
+<span class="nc" id="L18">                    .apply();</span>
+        }
+<span class="nc" id="L20">        if (intent.getAction()</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">                .equals(&quot;android.intent.action.PACKAGE_REMOVED&quot;)) {</span>
+<span class="nc" id="L22">            preferences.edit()</span>
+<span class="nc" id="L23">                    .putString(intent.getData().getSchemeSpecificPart(), &quot;-1&quot;)</span>
+<span class="nc" id="L24">                    .apply();</span>
+        }
+<span class="nc" id="L26">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

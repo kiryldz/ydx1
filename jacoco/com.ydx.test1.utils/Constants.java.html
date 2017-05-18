@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Constants.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.ydx.test1.utils</a> &gt; <span class="el_source">Constants.java</span></div><h1>Constants.java</h1><pre class="source lang-java linenums">package com.ydx.test1.utils;
+
+import com.ydx.test1.R;
+
+<span class="nc" id="L5">final public class Constants {</span>
+    static final public int NUM_WELCOME_PAGES = 3;
+    static final public String EMPTY_ICON = &quot;EMPTY_ICON&quot;;
+<span class="fc" id="L8">    static final public int[] ICON_LIST_SIZE_STANDART = {4,6};</span>
+<span class="fc" id="L9">    static final public int[] ICON_LIST_SIZE_LARGE = {5,7};</span>
+
+    static public int MIN(Integer a, Integer b) {
+<span class="fc bfc" id="L12" title="All 4 branches covered.">        if (a == null &amp;&amp; b == null) {</span>
+<span class="fc" id="L13">            return 0;</span>
+<span class="fc bfc" id="L14" title="All 4 branches covered.">        } else if (a != null &amp;&amp; b == null) {</span>
+<span class="fc" id="L15">            return a;</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        } else if (a == null){</span>
+<span class="fc" id="L17">            return b;</span>
+        } else {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">            return a &gt; b ? b : a;</span>
+        }
+    }
+
+<span class="fc" id="L23">    static public final int[] welcomeScreenPictures =</span>
+            {
+                    R.mipmap.ic_launcher
+                    ,R.drawable.welcome2
+                    ,R.drawable.welcome3
+            };
+<span class="fc" id="L29">    static public final int[] welcomeScreenText =</span>
+            {
+                    R.string.welcome_text_hello_to_user
+                    ,R.string.welcome_text_hello_to_user_2
+                    ,R.string.welcome_text_hello_to_user_3
+            };
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
