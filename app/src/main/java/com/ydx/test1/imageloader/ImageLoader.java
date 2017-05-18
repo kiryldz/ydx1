@@ -63,7 +63,7 @@ class ImageLoader {
 
     @Nullable
     private String processEntry(XmlPullParser parser) throws IOException, XmlPullParserException {
-        /*while (parser.next() != XmlPullParser.END_DOCUMENT) {
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.getEventType() == XmlPullParser.START_TAG
                     && "img".equals(parser.getName())) {
                 for (int i = 1; i < parser.getAttributeCount(); i++) {
@@ -74,7 +74,7 @@ class ImageLoader {
                     }
                 }
             }
-        }*/
+        }
 
         return null;
     }
